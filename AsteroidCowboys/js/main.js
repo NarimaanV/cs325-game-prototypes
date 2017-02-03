@@ -17,12 +17,17 @@ window.onload = function() {
     
     function preload() {
         // Load an image and call it 'logo'.
+        game.load.image( 'asteroid', 'assets/cowboy.png' );
+        game.load.image( 'bullet', 'assets/bullet.png' );
+        game.load.image( 'cowboy', 'assets/cowboy.png' );
+        game.load.image( 'background', 'assets/space.jpg' );
         game.load.image( 'logo', 'assets/phaser.png' );
     }
     
     var bouncy;
     
     function create() {
+        //background = game.add.sprite( 0, 0, 'background');
         // Create a sprite at the center of the screen using the 'logo' image.
         bouncy = game.add.sprite( game.world.centerX, game.world.centerY, 'logo' );
         // Anchor the sprite at its center, as opposed to its top-left corner.
