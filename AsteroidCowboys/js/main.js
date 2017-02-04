@@ -81,9 +81,11 @@ window.onload = function() {
             this.cowboy.y += speed;
         }
         
-//        else
-//        {
-//            cowboy.y += 0;
-//        }
+        else if (game.input.keyboard.isDown(Phaser.Keyboard.J))
+        {
+            this.bullet = game.add.sprite(this.cowboy.x + 100, this.cowboy.y, 'bullet');
+            this.bullet.anchor.setTo(1, 0.5);
+            this.bullet.scale.setTo(-0.25, 0.25);
+        }
     }
 };
