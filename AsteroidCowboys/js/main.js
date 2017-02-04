@@ -16,9 +16,12 @@ window.onload = function() {
     var game = new Phaser.Game( 1200, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
     
     function preload() {
+        
+        
+        
         // Load an image and call it 'logo'.
         game.load.image( 'asteroid', 'assets/cowboy.png' );
-        game.load.image( 'bullet', 'assets/bullet.png' );
+        game.load.image( 'bullet', 'assets/bullet-s.png' );
         game.load.image( 'cowboy', 'assets/cowboy-s.png' );
         game.load.image( 'background', 'assets/space.jpg' );
         game.load.image( 'earth', 'assets/earth.png' );
@@ -31,7 +34,7 @@ window.onload = function() {
     function create() {
         this.background = game.add.sprite( 0, 0, 'background');
         
-        this.earth = game.add.sprite(-350, game.world.centerY, 'earth');
+        this.earth = game.add.image(-350, game.world.centerY, 'earth');
         this.earth.anchor.setTo(0.5, 0.5);
         this.earth.scale.setTo(0.5, 0.5);
         this.earth.angle = 25;
@@ -41,7 +44,7 @@ window.onload = function() {
         this.cowboy.scale.setTo(0.4);
         game.physics.enable( this.cowboy, Phaser.Physics.ARCADE );
         this.cowboy.body.collideWorldBounds = true;
-        
+        //game.physics.startSystem(Phaser.Physics.P2JS);
         
         
         
@@ -71,21 +74,33 @@ window.onload = function() {
         // new trajectory.
         //bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, this.game.input.activePointer, 500, 500, 500 );
         
-        if (game.input.keyboard.isDown(Phaser.Keyboard.W))
+        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
+        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
+        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
+        
+        if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
         {
             this.cowboy.y -= speed;
         }
         
-        else if (game.input.keyboard.isDown(Phaser.Keyboard.S))
+        else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
         {
             this.cowboy.y += speed;
         }
         
-        else if (game.input.keyboard.isDown(Phaser.Keyboard.J))
+        else if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) || (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) || (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && game.input.keyboard.isDown(Phaser.Keyboard.UP)))
         {
             this.bullet = game.add.sprite(this.cowboy.x + 100, this.cowboy.y, 'bullet');
             this.bullet.anchor.setTo(1, 0.5);
-            this.bullet.scale.setTo(-0.25, 0.25);
+            this.bullet.scale.setTo(-0.15, 0.15);
+            
+            //game.physics.p2.enable(this.bullet);
+            //this.bullet.body.moveRight(500);
+           
+            game.physics.enable(this.bullet, Phaser.Physics.ARCADE);
+//            game.physics.arcade.accelerateToXY(this.bullet, this.cowboy.x + 100 + 500, this.cowboy.y, 1000, 1000, 0);
+            this.bullet.body.velocity()
+            //this.bullet.kill();
         }
     }
 };
