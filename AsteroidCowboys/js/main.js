@@ -16,10 +16,6 @@ window.onload = function() {
     var game = new Phaser.Game( 1200, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
     
     function preload() {
-        
-        
-        
-        // Load an image and call it 'logo'.
         game.load.image( 'asteroid', 'assets/cowboy.png' );
         game.load.image( 'bullet', 'assets/bullet-s.png' );
         game.load.image( 'cowboy', 'assets/cowboy-s.png' );
@@ -31,8 +27,57 @@ window.onload = function() {
     var bouncy;
     var speed = 6;
     
+    var Bullet = function (game, key)
+    {
+
+        Phaser.Sprite.call(this, game, 0, 0, key);
+
+        this.texture.baseTexture.scaleMode = PIXI.scaleModes.NEAREST;
+
+        this.anchor.set(0.5);
+
+        this.checkWorldBounds = true;
+        this.outOfBoundsKill = true;
+        this.exists = false;
+
+        this.tracking = false;
+        this.scaleSpeed = 0;
+
+    };
+    
+    Weapon.SingleBullet = function (game)
+    {
+
+        Phaser.Group.call(this, game, game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE);
+
+        this.nextFire = 0;
+        this.bulletSpeed = 600;
+        this.fireRate = 100;
+
+        for (var i = 0; i < 64; i++)
+        {
+            this.add(new Bullet(game, 'bullet'), true);
+        }
+
+        return this;
+
+    };
+    
+    Weapon.SingleBullet.prototype.fire = function (source)
+    {
+        if (this.game.time.time < this.nextFire) { return; }
+
+        var x = source.x + 10;
+        var y = source.y + 10;
+
+        this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
+
+        this.nextFire = this.game.time.time + this.fireRate;
+
+    };
+    
     function create() {
-        this.background = game.add.sprite( 0, 0, 'background');
+        this.background = game.add.image( 0, 0, 'background');
         
         this.earth = game.add.image(-350, game.world.centerY, 'earth');
         this.earth.anchor.setTo(0.5, 0.5);
@@ -46,6 +91,14 @@ window.onload = function() {
         this.cowboy.body.collideWorldBounds = true;
         //game.physics.startSystem(Phaser.Physics.P2JS);
         
+        this.cursors = game.input.keyboard.createCursorKeys();
+        
+        weapon = this.add.weapon(10, 'bullet');
+        weapon.fireFrom.set(300, 300);
+        this.input.onDown.add(weapon.fire, this);
+        
+        this.weapons = [];
+        this.weapons.push(new Weapon.SingleBullet(this.game));
         
         
         // Create a sprite at the center of the screen using the 'logo' image.
@@ -74,33 +127,35 @@ window.onload = function() {
         // new trajectory.
         //bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, this.game.input.activePointer, 500, 500, 500 );
         
-        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
-        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
-        this.game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
+        game.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
+        game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
+        game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
         
         if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
         {
             this.cowboy.y -= speed;
         }
         
-        else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
+        if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
         {
             this.cowboy.y += speed;
         }
         
-        else if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) || (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) || (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR) && game.input.keyboard.isDown(Phaser.Keyboard.UP)))
+        if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
         {
-            this.bullet = game.add.sprite(this.cowboy.x + 100, this.cowboy.y, 'bullet');
-            this.bullet.anchor.setTo(1, 0.5);
-            this.bullet.scale.setTo(-0.15, 0.15);
+//            this.bullet = game.add.sprite(this.cowboy.x + 100, this.cowboy.y, 'bullet');
+//            this.bullet.anchor.setTo(1, 0.5);
+//            this.bullet.scale.setTo(-0.15, 0.15);
             
             //game.physics.p2.enable(this.bullet);
             //this.bullet.body.moveRight(500);
            
-            game.physics.enable(this.bullet, Phaser.Physics.ARCADE);
+            //game.physics.enable(this.bullet, Phaser.Physics.ARCADE);
 //            game.physics.arcade.accelerateToXY(this.bullet, this.cowboy.x + 100 + 500, this.cowboy.y, 1000, 1000, 0);
-            this.bullet.body.velocity()
+            //this.bullet.body.velocity()
             //this.bullet.kill();
+            
+            this.weapons[0].fire(this.cowboy);
         }
     }
 };
