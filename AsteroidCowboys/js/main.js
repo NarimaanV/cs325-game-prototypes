@@ -29,13 +29,16 @@ window.onload = function() {
     
     function create() {
         this.background = game.add.sprite( 0, 0, 'background');
-        this.earth = game.add.sprite(0, game.world.centerY, 'earth');
+        
+        this.earth = game.add.sprite(-350, game.world.centerY, 'earth');
         this.earth.anchor.setTo(0.5, 0.5);
-        this.earth.scale.setTo(0.15, 0.15);
+        this.earth.scale.setTo(0.5, 0.5);
+        this.earth.angle = 25;
         
         this.cowboy = game.add.sprite(game.world.centerX*0.5, game.world.centerY, 'cowboy');
         this.cowboy.anchor.setTo(0.5, 0.5);
-        this.cowboy.scale.setTo(0.5, 0.5);
+        this.cowboy.scale.setTo(0.5);
+        
         
         
         
