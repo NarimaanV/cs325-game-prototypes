@@ -26,6 +26,7 @@ window.onload = function() {
     }
     
     var bouncy;
+    var speed = 6;
     
     function create() {
         this.background = game.add.sprite( 0, 0, 'background');
@@ -38,6 +39,8 @@ window.onload = function() {
         this.cowboy = game.add.sprite(game.world.centerX*0.5, game.world.centerY, 'cowboy');
         this.cowboy.anchor.setTo(0.5, 0.5);
         this.cowboy.scale.setTo(0.4);
+        game.physics.enable( this.cowboy, Phaser.Physics.ARCADE );
+        this.cowboy.body.collideWorldBounds = true;
         
         
         
@@ -67,5 +70,20 @@ window.onload = function() {
         // This function returns the rotation angle that makes it visually match its
         // new trajectory.
         //bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, this.game.input.activePointer, 500, 500, 500 );
+        
+        if (game.input.keyboard.isDown(Phaser.Keyboard.W))
+        {
+            this.cowboy.y -= speed;
+        }
+        
+        else if (game.input.keyboard.isDown(Phaser.Keyboard.S))
+        {
+            this.cowboy.y += speed;
+        }
+        
+//        else
+//        {
+//            cowboy.y += 0;
+//        }
     }
 };
