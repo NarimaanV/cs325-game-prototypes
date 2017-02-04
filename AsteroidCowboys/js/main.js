@@ -37,7 +37,7 @@ window.onload = function() {
         
         this.cowboy = game.add.sprite(game.world.centerX*0.5, game.world.centerY, 'cowboy');
         this.cowboy.anchor.setTo(0.5, 0.5);
-        this.cowboy.scale.setTo(0.5);
+        this.cowboy.scale.setTo(0.4);
         
         
         
