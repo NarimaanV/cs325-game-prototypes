@@ -89,13 +89,8 @@ window.onload = function() {
         this.cowboy.scale.setTo(0.4);
         game.physics.enable( this.cowboy, Phaser.Physics.ARCADE );
         this.cowboy.body.collideWorldBounds = true;
-        //game.physics.startSystem(Phaser.Physics.P2JS);
         
         this.cursors = game.input.keyboard.createCursorKeys();
-        
-        weapon = this.add.weapon(10, 'bullet');
-        weapon.fireFrom.set(300, 300);
-        this.input.onDown.add(weapon.fire, this);
         
         this.weapons = [];
         this.weapons.push(new Weapon.SingleBullet(this.game));
