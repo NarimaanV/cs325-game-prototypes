@@ -45,36 +45,36 @@ window.onload = function() {
 
     };
     
-    Weapon.SingleBullet = function (game)
-    {
-
-        Phaser.Group.call(this, game, game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE);
-
-        this.nextFire = 0;
-        this.bulletSpeed = 600;
-        this.fireRate = 100;
-
-        for (var i = 0; i < 64; i++)
-        {
-            this.add(new Bullet(game, 'bullet'), true);
-        }
-
-        return this;
-
-    };
-    
-    Weapon.SingleBullet.prototype.fire = function (source)
-    {
-        if (this.game.time.time < this.nextFire) { return; }
-
-        var x = source.x + 10;
-        var y = source.y + 10;
-
-        this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
-
-        this.nextFire = this.game.time.time + this.fireRate;
-
-    };
+//    Weapon.SingleBullet = function (game)
+//    {
+//
+//        Phaser.Group.call(this, game, game.world, 'Single Bullet', false, true, Phaser.Physics.ARCADE);
+//
+//        this.nextFire = 0;
+//        this.bulletSpeed = 600;
+//        this.fireRate = 100;
+//
+//        for (var i = 0; i < 64; i++)
+//        {
+//            this.add(new Bullet(game, 'bullet'), true);
+//        }
+//
+//        return this;
+//
+//    };
+//    
+//    Weapon.SingleBullet.prototype.fire = function (source)
+//    {
+//        if (this.game.time.time < this.nextFire) { return; }
+//
+//        var x = source.x + 10;
+//        var y = source.y + 10;
+//
+//        this.getFirstExists(false).fire(x, y, 0, this.bulletSpeed, 0, 0);
+//
+//        this.nextFire = this.game.time.time + this.fireRate;
+//
+//    };
     
     function create() {
         this.background = game.add.image( 0, 0, 'background');
@@ -89,11 +89,9 @@ window.onload = function() {
         this.cowboy.scale.setTo(0.4);
         game.physics.enable( this.cowboy, Phaser.Physics.ARCADE );
         this.cowboy.body.collideWorldBounds = true;
-        
-        this.cursors = game.input.keyboard.createCursorKeys();
-        
-        this.weapons = [];
-        this.weapons.push(new Weapon.SingleBullet(this.game));
+                
+        //this.weapons = [];
+        //this.weapons.push(new Weapon.SingleBullet(this.game));
         
         
         // Create a sprite at the center of the screen using the 'logo' image.
@@ -138,9 +136,9 @@ window.onload = function() {
         
         if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
         {
-//            this.bullet = game.add.sprite(this.cowboy.x + 100, this.cowboy.y, 'bullet');
-//            this.bullet.anchor.setTo(1, 0.5);
-//            this.bullet.scale.setTo(-0.15, 0.15);
+            this.bullet = game.add.sprite(this.cowboy.x + 100, this.cowboy.y, 'bullet');
+            this.bullet.anchor.setTo(1, 0.5);
+            this.bullet.scale.setTo(-0.15, 0.15);
             
             //game.physics.p2.enable(this.bullet);
             //this.bullet.body.moveRight(500);
@@ -150,7 +148,7 @@ window.onload = function() {
             //this.bullet.body.velocity()
             //this.bullet.kill();
             
-            this.weapons[0].fire(this.cowboy);
+            //this.weapons[0].fire(this.cowboy);
         }
     }
 };
