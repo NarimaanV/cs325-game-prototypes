@@ -81,59 +81,66 @@ window.onload = function() {
     }
     
     function update() {
+        // Prevent input keys from scrolling the screen
         game.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
         game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
         game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
         game.input.keyboard.addKeyCapture(Phaser.Keyboard.ENTER);
         
+        // To move player up
         if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
         {
             player.y -= speed;
         }
         
+        // To move player down
         if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
         {
             player.y += speed;
         }
         
+        // To fire bullets
         if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
         {
             fireBullet();
         }
         
+        // To start game
         if (game.input.keyboard.isDown(Phaser.Keyboard.ENTER))
         {
             gameStartText.destroy();
             gameStarted = true;
         }
         
+        // Spawn asteroids
         if (gameStarted)
         {
-            fireAsteroid();
+            spawnAsteroid();
         }
         
-        game.physics.arcade.overlap(bullets, asteroids, bulletHitAsteroid, null, this);
-        game.physics.arcade.overlap(earth, asteroids, endGameLoss, null, this);
-        game.physics.arcade.overlap(player, asteroids, endGameLoss, null, this);
-        
+        // When maximum number of asteroids destroyed
         if (counter === limit)
         {
             endGameWin();    
         }
+        
+        // Dealing with bullet-asteroid, earth-asteroid, and player-asteroid collisions
+        game.physics.arcade.overlap(bullets, asteroids, bulletHitAsteroid, null, this);
+        game.physics.arcade.overlap(earth, asteroids, endGameLoss, null, this);
+        game.physics.arcade.overlap(player, asteroids, endGameLoss, null, this);   
     }
     
     function fireBullet()
     {
-
-        //  To avoid them being allowed to fire too fast we set a time limit
+        //  Use timer delay to limit firing rate
         if (game.time.now > bulletTime)
         {
-            //  Grab the first bullet we can from the pool
+            //  Grab the first bullet we can from the group of bullets
             bullet = bullets.getFirstExists(false);
 
             if (bullet)
             {
-                //  And fire it
+                // Fire bullets
                 bullet.reset(player.x + 80, player.y);
                 bullet.body.velocity.x = 400;
                 bulletTime = game.time.now + 400;
@@ -142,19 +149,18 @@ window.onload = function() {
 
     }
     
-    function fireAsteroid()
+    function spawnAsteroid()
     {
 
-        //  To avoid them being allowed to fire too fast we set a time limit
+        //  Use timer delay to limit spawning rate
         if (game.time.now > asteroidTime)
         {
-            //  Grab the first bullet we can from the pool
+            //  Grab the first asteroid from group of asteroids
             asteroid = asteroids.getFirstExists(false);
-            //asteroid.body.setSize(390, 105, 0, 220);
             
             if (asteroid)
             {
-                //  And fire it
+                // Spawn asteroid
                 asteroid.reset(1200, Math.floor((Math.random() * 5) + 1) * 100);
                 asteroid.body.velocity.x = -300;
                 asteroidTime = game.time.now + 1000;
@@ -163,6 +169,7 @@ window.onload = function() {
 
     }
     
+    // Collision manager for bullet-asteroid collision
     function bulletHitAsteroid(bullet, asteroid)
     {
         bullet.kill();
@@ -170,6 +177,7 @@ window.onload = function() {
         counter += 1;
     }
     
+    // Collision manager for earth-asteroid or player-asteroid collision, resulting in game over
     function endGameLoss()
     {
         player.destroy();
@@ -180,6 +188,7 @@ window.onload = function() {
         endGameText.anchor.setTo(0.5);
     }
     
+    // If player destroys all asteroids
     function endGameWin()
     {
         asteroids.destroy();
