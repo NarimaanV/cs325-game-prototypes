@@ -1,0 +1,13 @@
+For showing hitboxes of sprites and groups of sprites
+function render()
+{
+    game.debug.body(sprite1);
+    game.debug.body(sprite2);
+    group1.forEachAlive(renderGroup, this);
+    group2.forEachAlive(renderGroup, this);
+}
+    
+function renderGroup(member)
+{
+    game.debug.body(member);
+}

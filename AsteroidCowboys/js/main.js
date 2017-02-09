@@ -13,15 +13,15 @@ window.onload = function() {
     
     "use strict";
     
-    var game = new Phaser.Game( 1200, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update, render: render} );
+    var game = new Phaser.Game( 1200, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update} );
     
     function preload() {
-        game.load.image( 'asteroid', 'assets/asteroid.png' );
+        // Load
+        game.load.image( 'asteroid', 'assets/asteroid-xs.png' );
         game.load.image( 'bullet', 'assets/bullet-s.png' );
         game.load.image( 'player', 'assets/cowboy-s.png' );
         game.load.image( 'background', 'assets/space.jpg' );
         game.load.image( 'earth', 'assets/earth.png' );
-        game.load.image( 'logo', 'assets/phaser.png' );
     }
     
     var speed = 6;
@@ -29,21 +29,28 @@ window.onload = function() {
     var asteroid, asteroids;
     var bulletTime = 0;
     var asteroidTime = 0;
+    var background, earth, player;
+    var gameOverText, gameStartText;
+    var gameStarted = false;
+    var counter = 0;
+    var style = {fill:'white', align:'center', fontSize:80};
+    var limit = 3;
     
     function create() {
-        this.background = game.add.image( 0, 0, 'background');
+        background = game.add.image( 0, 0, 'background');
         
-        this.earth = game.add.image(-350, game.world.centerY, 'earth');
-        this.earth.anchor.setTo(0.5, 0.5);
-        this.earth.scale.setTo(0.5, 0.5);
-        this.earth.angle = 25;
+        earth = game.add.sprite(-350, game.world.centerY, 'earth');
+        game.physics.enable( earth, Phaser.Physics.ARCADE );
+        earth.anchor.setTo(0.5, 0.5);
+        earth.scale.setTo(0.5, 0.5);
+        earth.angle = 25;
+        //earth.body.setSize(600,600,0,0);
         
-        this.player = game.add.sprite(game.world.centerX*0.5, game.world.centerY, 'player');
-        this.player.anchor.setTo(0.5, 0.5);
-        this.player.scale.setTo(0.4);
-        game.physics.enable( this.player, Phaser.Physics.ARCADE );
-        this.player.body.collideWorldBounds = true;
-        this.player.body.setSize(100, 100, 100, 100);
+        player = game.add.sprite(game.world.centerX*0.5, game.world.centerY, 'player');
+        player.anchor.setTo(0.5, 0.5);
+        player.scale.setTo(0.4);
+        game.physics.enable( player, Phaser.Physics.ARCADE );
+        player.body.collideWorldBounds = true;
         
         bullets = game.add.group();
         bullets.enableBody = true;
@@ -56,64 +63,63 @@ window.onload = function() {
         bullets.setAll('outOfBoundsKill', true);
         bullets.setAll('checkWorldBounds', true);
         
-        // The enemy's bullets
+        // The incoming asteroids
         asteroids = game.add.group();
         asteroids.enableBody = true;
         asteroids.physicsBodyType = Phaser.Physics.ARCADE;
         asteroids.createMultiple(30, 'asteroid');
         asteroids.setAll('anchor.x', 1);
         asteroids.setAll('anchor.y', 0.5);
-        asteroids.setAll('scale.x', 0.2);
-        asteroids.setAll('scale.y', 0.2);
         asteroids.setAll('outOfBoundsKill', true);
         asteroids.setAll('checkWorldBounds', true);
+        
+        gameStartText = game.add.text(600, 300, 'Hit Enter\nto Begin!', style);
+        gameStartText.anchor.setTo(0.5);
     }
     
     function update() {
-        // Accelerate the 'logo' sprite towards the cursor,
-        // accelerating at 500 pixels/second and moving no faster than 500 pixels/second
-        // in X or Y.
-        // This function returns the rotation angle that makes it visually match its
-        // new trajectory.
-        //bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, this.game.input.activePointer, 500, 500, 500 );
-        
         game.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
         game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
         game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
+        game.input.keyboard.addKeyCapture(Phaser.Keyboard.ENTER);
         
         if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
         {
-            this.player.y -= speed;
+            player.y -= speed;
         }
         
         if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
         {
-            this.player.y += speed;
+            player.y += speed;
         }
         
         if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
         {
-            fireBullet(this);
+            fireBullet();
         }
         
-        if (game.input.keyboard.isDown(Phaser.Keyboard.M))
+        if (game.input.keyboard.isDown(Phaser.Keyboard.ENTER))
         {
-            fireAsteroid(this);
+            gameStartText.destroy();
+            gameStarted = true;
+        }
+        
+        if (gameStarted)
+        {
+            fireAsteroid();
         }
         
         game.physics.arcade.overlap(bullets, asteroids, bulletHitAsteroid, null, this);
+        game.physics.arcade.overlap(earth, asteroids, endGameLoss, null, this);
+        game.physics.arcade.overlap(player, asteroids, endGameLoss, null, this);
+        
+        if (counter === limit)
+        {
+            endGameWin();    
+        }
     }
     
-    function render()
-    {
-        game.debug.body(this.player);
-        game.debug.body(bullets);
-        game.debug.body(asteroids);
-        game.debug.body(this.earth);
-    }
-    
-    
-    function fireBullet (scope)
+    function fireBullet()
     {
 
         //  To avoid them being allowed to fire too fast we set a time limit
@@ -125,7 +131,7 @@ window.onload = function() {
             if (bullet)
             {
                 //  And fire it
-                bullet.reset(scope.player.x + 80, scope.player.y);
+                bullet.reset(player.x + 80, player.y);
                 bullet.body.velocity.x = 400;
                 bulletTime = game.time.now + 400;
             }
@@ -133,7 +139,7 @@ window.onload = function() {
 
     }
     
-    function fireAsteroid (scope)
+    function fireAsteroid()
     {
 
         //  To avoid them being allowed to fire too fast we set a time limit
@@ -141,13 +147,14 @@ window.onload = function() {
         {
             //  Grab the first bullet we can from the pool
             asteroid = asteroids.getFirstExists(false);
-
+            //asteroid.body.setSize(390, 105, 0, 220);
+            
             if (asteroid)
             {
                 //  And fire it
-                asteroid.reset(1200, scope.player.y);
+                asteroid.reset(1200, Math.floor((Math.random() * 5) + 1) * 100);
                 asteroid.body.velocity.x = -300;
-                asteroidTime = game.time.now + 400;
+                asteroidTime = game.time.now + 1000;
             }
         }
 
@@ -157,6 +164,24 @@ window.onload = function() {
     {
         bullet.kill();
         asteroid.kill();
+        counter += 1;
+    }
+    
+    function endGameLoss()
+    {
+        player.destroy();
+        asteroids.destroy();
+        bullets.destroy();
+        earth.destroy();
+        gameOverText = game.add.text(600, 300, 'Game Over!\nRefresh to Play Again', style);
+        gameOverText.anchor.setTo(0.5);
+    }
+    
+    function endGameWin()
+    {
+        asteroids.destroy();
+        gameOverText = game.add.text(600, 300, 'You Win!\nRefresh to\nPlay Again', style);
+        gameOverText.anchor.setTo(0.5);
     }
     
 };
