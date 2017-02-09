@@ -16,7 +16,7 @@ window.onload = function() {
     var game = new Phaser.Game( 1200, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update} );
     
     function preload() {
-        // Load
+        // Load images
         game.load.image( 'asteroid', 'assets/asteroid-xs.png' );
         game.load.image( 'bullet', 'assets/bullet-s.png' );
         game.load.image( 'player', 'assets/cowboy-s.png' );
@@ -24,34 +24,36 @@ window.onload = function() {
         game.load.image( 'earth', 'assets/earth.png' );
     }
     
-    var speed = 6;
-    var bullet, bullets;
-    var asteroid, asteroids;
-    var bulletTime = 0;
-    var asteroidTime = 0;
-    var background, earth, player;
-    var gameOverText, gameStartText;
-    var gameStarted = false;
-    var counter = 0;
-    var style = {fill:'white', align:'center', fontSize:80};
-    var limit = 3;
+    var speed = 6; // Player speed when moving
+    var bullet, bullets; // Bullets the player fires
+    var asteroid, asteroids; // Incoming asteroids
+    var bulletTime = 0; // Delay timer variable used when firing bullets
+    var asteroidTime = 0; // Delay timer variable used when spawning asteroids
+    var background, earth, player; // Sprite/images for the background, earth, and the player
+    var endGameText, gameStartText; // Text displayed when the game ends
+    var gameStarted = false; // Boolean for when game is started
+    var counter = 0; // Counter for keeping track of asteroids destoryed
+    var style = {fill:'white', align:'center', fontSize:80}; // Text style for end-game text
+    var limit = 60; // Maximum number of asteroids that will spawn
     
     function create() {
-        background = game.add.image( 0, 0, 'background');
+        background = game.add.image( 0, 0, 'background'); // Spawn background
         
+        // Spawn Earth and position it
         earth = game.add.sprite(-350, game.world.centerY, 'earth');
         game.physics.enable( earth, Phaser.Physics.ARCADE );
         earth.anchor.setTo(0.5, 0.5);
         earth.scale.setTo(0.5, 0.5);
         earth.angle = 25;
-        //earth.body.setSize(600,600,0,0);
         
+        // Spawn player and position it
         player = game.add.sprite(game.world.centerX*0.5, game.world.centerY, 'player');
         player.anchor.setTo(0.5, 0.5);
         player.scale.setTo(0.4);
         game.physics.enable( player, Phaser.Physics.ARCADE );
         player.body.collideWorldBounds = true;
         
+        // Create group of bullets used when firing
         bullets = game.add.group();
         bullets.enableBody = true;
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
@@ -63,7 +65,7 @@ window.onload = function() {
         bullets.setAll('outOfBoundsKill', true);
         bullets.setAll('checkWorldBounds', true);
         
-        // The incoming asteroids
+        // Create group of asteroids used for spawning towards player
         asteroids = game.add.group();
         asteroids.enableBody = true;
         asteroids.physicsBodyType = Phaser.Physics.ARCADE;
@@ -73,6 +75,7 @@ window.onload = function() {
         asteroids.setAll('outOfBoundsKill', true);
         asteroids.setAll('checkWorldBounds', true);
         
+        // Beginning game text
         gameStartText = game.add.text(600, 300, 'Hit Enter\nto Begin!', style);
         gameStartText.anchor.setTo(0.5);
     }
@@ -173,15 +176,15 @@ window.onload = function() {
         asteroids.destroy();
         bullets.destroy();
         earth.destroy();
-        gameOverText = game.add.text(600, 300, 'Game Over!\nRefresh to Play Again', style);
-        gameOverText.anchor.setTo(0.5);
+        endGameText = game.add.text(600, 300, 'Game Over!\nRefresh to Play Again', style);
+        endGameText.anchor.setTo(0.5);
     }
     
     function endGameWin()
     {
         asteroids.destroy();
-        gameOverText = game.add.text(600, 300, 'You Win!\nRefresh to\nPlay Again', style);
-        gameOverText.anchor.setTo(0.5);
+        endGameText = game.add.text(600, 300, 'You Win!\nRefresh to\nPlay Again', style);
+        endGameText.anchor.setTo(0.5);
     }
     
 };
