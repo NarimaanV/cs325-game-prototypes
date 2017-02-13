@@ -24,47 +24,75 @@ BasicGame.Game = function (game) {
     //  But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
     
     // Create your own variables.
-    this.bouncy = null;
+    this.player = null;
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
-
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-        
-        // Create a sprite at the center of the screen using the 'logo' image.
-        this.bouncy = this.game.add.sprite( this.game.world.centerX, this.game.world.centerY, 'logo' );
-        // Anchor the sprite at its center, as opposed to its top-left corner.
-        // so it will be truly centered.
-        this.bouncy.anchor.setTo( 0.5, 0.5 );
-        
-        // Turn on the arcade physics engine for this sprite.
-        this.game.physics.enable( this.bouncy, Phaser.Physics.ARCADE );
-        // Make it bounce off of the world bounds.
-        this.bouncy.body.collideWorldBounds = true;
-        
-        // Add some text using a CSS style.
-        // Center it in X, and position its top 15 pixels from the top of the world.
-        var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
-        var text = this.game.add.text( this.game.world.centerX, 15, "Build something amazing.", style );
-        text.anchor.setTo( 0.5, 0.0 );
-        
-        // When you click on the sprite, you go back to the MainMenu.
-        this.bouncy.inputEnabled = true;
-        this.bouncy.events.onInputDown.add( function() { this.state.start('MainMenu'); }, this );
+        this.player = this.add.sprite(300, 200, 'player');
+        this.player.animations.add('walk-down', Phaser.Animation.generateFrameNames('walkDown', 1, 4,'.png'), null, true);
+        this.player.animations.add('walk-right', Phaser.Animation.generateFrameNames('walkRight', 1, 4,'.png'), null, true);
+        this.player.animations.add('walk-left', Phaser.Animation.generateFrameNames('walkLeft', 1, 4,'.png'), null, true);
+        this.player.animations.add('walk-up', Phaser.Animation.generateFrameNames('walkUp', 1, 4,'.png'), null, true);
+        this.stage.backgroundColor = '#ffffff'
     },
 
     update: function () {
-
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
+        this.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
+        this.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
+        this.input.keyboard.addKeyCapture(Phaser.Keyboard.LEFT);
+        this.input.keyboard.addKeyCapture(Phaser.Keyboard.RIGHT);
+        this.input.keyboard.addKeyCapture(Phaser.Keyboard.ENTER);
         
-        // Accelerate the 'logo' sprite towards the cursor,
-        // accelerating at 500 pixels/second and moving no faster than 500 pixels/second
-        // in X or Y.
-        // This function returns the rotation angle that makes it visually match its
-        // new trajectory.
-        this.bouncy.rotation = this.game.physics.arcade.accelerateToPointer( this.bouncy, this.game.input.activePointer, 500, 500, 500 );
+        if (this.input.keyboard.isDown(Phaser.Keyboard.ENTER))
+        {
+            this.quitGame();
+        }
+        
+        if (this.input.keyboard.isDown(Phaser.Keyboard.UP))
+        {
+            this.player.animations.play('walk-up', 10, true);
+            this.player.y -= 5;
+        }
+        
+        else
+        {
+            this.player.animations.stop('walk-up');
+        }
+        
+        if (this.input.keyboard.isDown(Phaser.Keyboard.DOWN))
+        {
+            this.player.animations.play('walk-down', 10, true);
+            this.player.y += 5;
+        }
+        
+        else
+        {
+            this.player.animations.stop('walk-down');
+        }
+        
+        if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT))
+        {
+            this.player.animations.play('walk-left', 10, true);
+            this.player.x -= 5;
+        }
+        
+        else
+        {
+            this.player.animations.stop('walk-left');
+        }
+        
+        if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT))
+        {
+            this.player.animations.play('walk-right', 10, true);
+            this.player.x += 5;
+        }
+        
+        else
+        {
+            this.player.animations.stop('walk-right');
+        }
     },
 
     quitGame: function (pointer) {
