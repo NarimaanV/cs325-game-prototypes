@@ -13,19 +13,33 @@ window.onload = function() {
     
     "use strict";
     
-    var game = new Phaser.Game( 1000, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
+    var game = new Phaser.Game( 1000, 500, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
     
     function preload()
     {
-        game.load.image('player', 'assets/playerAnim/run1.png');
+        this.load.atlasJSONHash('player', 'assets/playerAnim.png', 'assets/playerAnim.json');
+        this.load.image('background', 'assets/background.jpg')
     }
     
-    var player;
+    var player, background;
     
     function create()
     {
-        player = game.add.sprite(0, 500, 'player');
+        game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.physics.arcade.gravity.y = 250;
+        
+        background = game.add.tileSprite(0,0,1000,500,'background');
+        game.world.setBounds(0,0,1000,390);
+        player = game.add.sprite(100, 390, 'player');
         player.anchor.setTo(0, 1);
+        player.animations.add('run', Phaser.Animation.generateFrameNames('run', 1, 8,'.png'), null, true);
+        player.animations.add('jump', Phaser.Animation.generateFrameNames('jump', 1, 4,'.png'), null, true);
+        player.animations.play('run', 10);
+        game.physics.enable(player, Phaser.Physics.ARCADE);
+        player.body.collideWorldBounds = true;
+        
+        //player.animations.play('jump', 5);
+        background.autoScroll(-100, 0);
     }
     
     function update()
