@@ -13,37 +13,61 @@ window.onload = function() {
     
     "use strict";
     
-    var game = new Phaser.Game( 1000, 500, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
+    var game = new Phaser.Game( 1000, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update } );
     
     function preload()
     {
-        this.load.atlasJSONHash('player', 'assets/playerAnim.png', 'assets/playerAnim.json');
-        this.load.image('background', 'assets/background.jpg')
+        game.load.atlasJSONHash('player', 'assets/playerAnim.png', 'assets/playerAnim.json');
+        game.load.image('background', 'assets/background.png');
+        game.load.image('button', 'assets/button.png');
     }
     
-    var player, background;
+    var player, background, button;
+    var upKey;
+    var runAnim, jumpAnim;
+    var runSpeed = 15, scrollSpeed = -300, jumpSpeed = 300;
+    var jumpTimer = 0;
     
     function create()
     {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.gravity.y = 250;
         
-        background = game.add.tileSprite(0,0,1000,500,'background');
-        game.world.setBounds(0,0,1000,390);
-        player = game.add.sprite(100, 390, 'player');
-        player.anchor.setTo(0, 1);
-        player.animations.add('run', Phaser.Animation.generateFrameNames('run', 1, 8,'.png'), null, true);
-        player.animations.add('jump', Phaser.Animation.generateFrameNames('jump', 1, 4,'.png'), null, true);
-        player.animations.play('run', 10);
+        background = game.add.tileSprite(0,0,1000,600,'background');
+        game.world.setBounds(0,0,1000,442);
+        background.autoScroll(scrollSpeed, 0);
+        
+        
+        player = game.add.sprite(300, 442, 'player');
+        player.anchor.setTo(0.5, 1);
+        runAnim = player.animations.add('run', Phaser.Animation.generateFrameNames('run', 1, 8,'.png'), null, true);
+        jumpAnim = player.animations.add('jump', ['jump1.png','jump2.png','jump3.png','jump4.png','jump1.png',], null);
+        player.animations.play('run', runSpeed);
+        
         game.physics.enable(player, Phaser.Physics.ARCADE);
         player.body.collideWorldBounds = true;
         
-        //player.animations.play('jump', 5);
-        background.autoScroll(-100, 0);
+        button = game.add.button(500, 520, 'button', function(){button.tint = 0x808080; jump();});
+        button.anchor.setTo(0.5, 0.5);
+        
+        upKey = game.input.keyboard.addKey(Phaser.KeyCode.UP);
+        game.input.keyboard.addKeyCapture(upKey);
+        upKey.onDown.add(jump);
     }
     
     function update()
     {
         
+    }
+    
+    function jump()
+    {
+        if (game.time.now > jumpTimer)
+        {
+            jumpTimer = game.time.now + 2500;
+            player.body.velocity.y -= jumpSpeed;
+            player.animations.play('jump', 2.1);
+            jumpAnim.onComplete.add(function() {player.animations.stop('jump'); player.animations.play('run', runSpeed); button.tint = 0xFFFFFF;});
+        }
     }
 };
