@@ -13,7 +13,7 @@ window.onload = function() {
     
     "use strict";
     
-    var game = new Phaser.Game( 1000, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update, render: render} );
+    var game = new Phaser.Game( 1000, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update} );
     
     function preload()
     {
@@ -24,14 +24,18 @@ window.onload = function() {
         game.load.image('hole', 'assets/hole.png');
     }
     
-    var player, background, button, dog, dogs, hole, holes;
+    var player, background, button, buttonText, dog, dogs, hole, holes;
     var runAnim, jumpAnim;
     var runSpeed = 15, scrollSpeed = -300, jumpSpeed = 250; //300
     var jumpDelay = 0, enemyDelay = 0;
     var enemyChoice;
+    var gameStart = false, gameEnd = false;
+    var intro, outro, style;
+    var enterKey;
+    var timer;
     
     function create()
-    {
+    {   
         game.physics.startSystem(Phaser.Physics.ARCADE);
         game.physics.arcade.gravity.y = 250;
         
@@ -69,41 +73,45 @@ window.onload = function() {
         
         button = game.add.button(500, 550, 'button', jump);
         button.anchor.setTo(0.5, 0.5);
+        buttonText = game.add.text(500, 550, "JUMP!", {align: "center", fill: "white", fontSize: 50});
+        buttonText.anchor.setTo(0.5, 0.5);
+        
+        style = {fill: "white", align: "center", backgroundColor: "black"};
+        
+        intro = game.add.text(500, 300, "It's the middle of the night. You're a young doctor called in to perform an\nemergency heart transplant.You go to start your car and find it's dead.\nThe only option is to run to the hospital which is a few minutes away\nif you sprint. At this time of the night there's all sorts of weird stuff out\non the streets. Avoid all obstacles in your way to make it in time and\nsave a life! The only control is the on-screen button to jump.\nGood luck, Doctor! Press Enter to begin.", style);
+        
+        intro.anchor.setTo(0.5, 0.5);
+        
+        enterKey = game.input.keyboard.addKey(Phaser.KeyCode.ENTER);
+        game.input.keyboard.addKeyCapture(enterKey);
+        
+        enterKey.onDown.add(function() {intro.destroy(); timer = game.time.now + 90000; gameStart = true;});
     }
     
     function update()
     {
-        enemyChoice = Math.floor(Math.random() * 2);
-        
-        if (enemyChoice === 0)
+        if (gameStart)
         {
-            spawnDog();
+            enemyChoice = Math.floor(Math.random() * 2);
+
+            if (enemyChoice === 0)
+            {
+                spawnDog();
+            }
+
+            else
+            {
+                spawnHole();
+            }
         }
         
-        else
+        if (game.time.now >= timer)
         {
-            spawnHole();
+            endGameWin();
         }
-        
-        if (game.input.keyboard.isDown(Phaser.Keyboard.ENTER))
-        {
-            game.state.start(game.state.current);
-        }
-        
-        game.physics.arcade.overlap(player, dogs, endGameWin, null, this);
-        game.physics.arcade.overlap(player, holes, endGameWin, null, this);
-    }
-    
-    function render()
-    {
-        //game.debug.body(player);
-//        dogs.forEachAlive(renderGroup, this);
-//        holes.forEachAlive(renderGroup, this);
-    }
-    
-    function renderGroup(member)
-    {
-        game.debug.body(member);
+            
+        game.physics.arcade.overlap(player, dogs, endGameLoss, null, this);
+        game.physics.arcade.overlap(player, holes, endGameLoss, null, this);
     }
     
     function jump()
@@ -111,10 +119,11 @@ window.onload = function() {
         if (game.time.now > jumpDelay)
         {
             button.tint = 0x808080;
+            buttonText.kill();
             jumpDelay = game.time.now + 2000; // 2500
             player.body.velocity.y -= jumpSpeed;
             player.animations.play('jump', 5/2); // 2.1
-            jumpAnim.onComplete.add(function() {player.animations.stop('jump'); player.animations.play('run', runSpeed); button.tint = 0xFFFFFF;});
+            jumpAnim.onComplete.add(function() {player.animations.stop('jump'); player.animations.play('run', runSpeed); button.tint = 0xFFFFFF; buttonText.revive(500, 550)});
         }
     }
     
@@ -159,6 +168,9 @@ window.onload = function() {
         holes.destroy();
         dogs.destroy();
         background.stopScroll();
+        gameEnd = true;
+        outro = game.add.text(500, 300, "Oh no! You didn't make it to the hospital in time.\nThe patient didn't make it. Refresh if you want to try again.", style);
+        outro.anchor.setTo(0.5, 0.5);
     }
     
     function endGameWin()
@@ -166,6 +178,9 @@ window.onload = function() {
         holes.destroy();
         dogs.destroy();
         background.stopScroll();
-        player.body.velocity.x = 500;
+        player.animations.stop('run');
+        gameEnd = true;
+        outro = game.add.text(500, 300, "Congratulations! You made it to the hospital just in time,\nperformed the transplant, and saved the patient's life!\nRefresh if you want to play again.", style);
+        outro.anchor.setTo(0.5, 0.5);
     }
 };
