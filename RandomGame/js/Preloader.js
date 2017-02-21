@@ -30,7 +30,7 @@ BasicGame.Preloader.prototype = {
 		//	+ lots of other required assets here
         this.load.image( 'logo', 'assets/phaser.png' );
         
-        this.load.atlasJSONHash('player', 'assets/playerAnim.png', 'assets/playerAnim.json');
+        this.load.spritesheet( 'warrior', 'assets/warriorMedium.png', 96, 96);
 	},
 
 	create: function () {
