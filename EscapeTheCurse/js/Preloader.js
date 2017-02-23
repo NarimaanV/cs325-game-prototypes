@@ -1,8 +1,7 @@
 
 BasicGame.Preloader = function (game) {
 
-	this.background = null;
-	this.preloadBar = null;
+	this.loadingBar = null;
 
 	this.ready = false;
 
@@ -14,13 +13,14 @@ BasicGame.Preloader.prototype = {
 
 		//	These are the assets we loaded in Boot.js
 		//	A nice sparkly background and a loading progress bar
-		this.background = this.add.sprite(0, 0, 'preloaderBackground');
-		this.preloadBar = this.add.sprite(300, 400, 'preloaderBar');
+		this.stage.backgroundColor = '#ffffff'
+		this.loadingBar = this.add.sprite(384, 288, 'loadingBar');
+        this.loadingBar.anchor.setTo(0.5, 0);
 
-		//	This sets the preloadBar sprite as a loader sprite.
+		//	This sets the loadingBar sprite as a loader sprite.
 		//	What that does is automatically crop the sprite from 0 to full-width
 		//	as the files below are loaded in.
-		this.load.setPreloadSprite(this.preloadBar);
+		this.load.setPreloadSprite(this.loadingBar);
 
 		//	Here we load the rest of the assets our game needs.
 		//	As this is just a Project Template I've not provided these assets, swap them for your own.
@@ -31,14 +31,17 @@ BasicGame.Preloader.prototype = {
         this.load.image( 'logo', 'assets/phaser.png' );
         
         this.load.spritesheet( 'warrior', 'assets/warriorMedium.png', 96, 96);
-        this.game.load.tilemap('tilemap', 'assets/DungeonTileMapSample.json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.tilemap('tilemap', 'assets/DungeonTileMap.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tiles', 'assets/tileSheet.png');
+        this.game.load.image('monster1', 'assets/monster1.png');
+        this.game.load.image('monster2', 'assets/monster2.png');
+        this.game.load.image('monster3', 'assets/monster3.png');
 	},
 
 	create: function () {
 
 		//	Once the load has finished we disable the crop because we're going to sit in the update loop for a short while as the music decodes
-		this.preloadBar.cropEnabled = false;
+		this.loadingBar.cropEnabled = false;
 
 	},
 
