@@ -87,9 +87,7 @@ BasicGame.Game.prototype = {
         this.input.keyboard.addKeyCapture(this.leftKey);
         this.input.keyboard.addKeyCapture(this.rightKey);
         this.input.keyboard.addKeyCapture(this.enterKey);
-        
-        this.enterKey.onDown.add(this.quitGame, this);
-        
+                
         this.upKey.onDown.add(function() {this.warrior.animations.play('walk-up', 10, true); if (this.warrior.body.velocity.y == 0) {this.warrior.body.velocity.y -= this.speed;}}, this);
         this.upKey.onUp.add(function() {this.warrior.animations.stop('walk-up'); if (this.warrior.body.velocity.y != 0) {this.warrior.body.velocity.y += this.speed;}}, this);
         
