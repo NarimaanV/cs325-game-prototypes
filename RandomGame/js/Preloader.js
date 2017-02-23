@@ -31,6 +31,8 @@ BasicGame.Preloader.prototype = {
         this.load.image( 'logo', 'assets/phaser.png' );
         
         this.load.spritesheet( 'warrior', 'assets/warriorMedium.png', 96, 96);
+        this.game.load.tilemap('tilemap', 'assets/DungeonTileMapSample.json', null, Phaser.Tilemap.TILED_JSON);
+        this.game.load.image('tiles', 'assets/tileSheet.png');
 	},
 
 	create: function () {

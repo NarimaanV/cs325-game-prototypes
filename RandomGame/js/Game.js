@@ -38,18 +38,29 @@ BasicGame.Game.prototype = {
 
     create: function () {
         //this.stage.backgroundColor = '#ffffff'
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
         
-        this.warrior = this.add.sprite(400, 300, 'warrior');
-        this.warrior.anchor.setTo(0.5, 0.5);
+        this.map = this.game.add.tilemap('tilemap');
+        this.map.addTilesetImage('Dungeon', 'tiles');
+        this.map.enableBody = true;
+        
+        this.groundLayer = this.map.createLayer('Ground');
+        this.wallsLayer = this.map.createLayer('Walls');
+        this.invisibleReset = this.map.createLayer('Invisible Reset');
+        this.endGoal = this.map.createLayer('End Goal');
+        this.map.setCollisionBetween(1140, 1141, true, 'Walls');
+        
+        this.warrior = this.add.sprite(96, 384 - 96, 'warrior');
+        //this.warrior.anchor.setTo(0.5, 0.5);
+        this.game.physics.arcade.enable([this.warrior, this.map]);
         this.warrior.animations.add('walk-down', [19, 20, 21, 22, 23, 24, 25, 26], null, true);
         this.warrior.animations.add('walk-right', [28, 29, 30, 31, 32, 33, 34, 35], null, true);
         this.warrior.animations.add('walk-left', [10, 11, 12, 13, 14, 15, 16, 17], null, true);
         this.warrior.animations.add('walk-up', [1, 2, 3, 4, 5, 6, 7, 8], null, true);        
-        
-        this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        this.game.physics.arcade.enable([this.warrior]);
         this.warrior.body.collideWorldBounds = true;
         this.warrior.body.setSize(48,73,24,23);
+        
+//        this.game.physics.arcade.collide(this.warrior, this.wallsLayer);
         
         this.upKey = this.game.input.keyboard.addKey(Phaser.KeyCode.UP);
         this.downKey = this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN);
@@ -85,6 +96,8 @@ BasicGame.Game.prototype = {
 //        {
 //            this.warrior.alpha -= 1/(60*this.invisibleTime);
 //        }
+        
+        this.game.physics.arcade.collide(this.warrior, this.wallsLayer);
     },
     
     render: function()
