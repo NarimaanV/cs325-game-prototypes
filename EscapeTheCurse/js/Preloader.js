@@ -24,18 +24,18 @@ BasicGame.Preloader.prototype = {
 
 		//	Here we load the rest of the assets our game needs.
 		//	As this is just a Project Template I've not provided these assets, swap them for your own.
-		this.load.image('titlePage', 'assets/title.jpg');
 		this.load.atlas('playButton', 'assets/play_button.png', 'assets/play_button.json');
-		this.load.audio('titleMusic', ['assets/Poppers and Prosecco.mp3']);
-		//	+ lots of other required assets here
-        this.load.image( 'logo', 'assets/phaser.png' );
-        
+		//	+ lots of other required assets here        
         this.load.spritesheet( 'warrior', 'assets/warriorMedium.png', 96, 96);
         this.game.load.tilemap('tilemap', 'assets/DungeonTileMap.json', null, Phaser.Tilemap.TILED_JSON);
         this.game.load.image('tiles', 'assets/tileSheet.png');
         this.game.load.image('monster1', 'assets/monster1.png');
         this.game.load.image('monster2', 'assets/monster2.png');
         this.game.load.image('monster3', 'assets/monster3.png');
+        this.game.load.image('menuBackground', 'assets/menuBackground.jpg');
+        this.game.load.image('menuLogo', 'assets/menuLogo.png');
+        this.game.load.image('button', 'assets/button.png')
+        this.load.audio('gameMusic', ['assets/Lightless Dawn.mp3']);
 	},
 
 	create: function () {
@@ -56,7 +56,7 @@ BasicGame.Preloader.prototype = {
 		//	If you don't have any music in your game then put the game.state.start line into the create function and delete
 		//	the update function completely.
 		
-		if (this.cache.isSoundDecoded('titleMusic') && this.ready == false)
+		if (this.cache.isSoundDecoded('gameMusic') && this.ready == false)
 		{
 			this.ready = true;
 			this.state.start('MainMenu');
