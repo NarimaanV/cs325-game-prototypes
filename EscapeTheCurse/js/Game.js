@@ -99,8 +99,6 @@ BasicGame.Game.prototype = {
         
         this.rightKey.onDown.add(function() {this.warrior.animations.play('walk-right', 10, true); if (this.warrior.body.velocity.x == 0) {this.warrior.body.velocity.x += this.speed;}}, this);
         this.rightKey.onUp.add(function() {this.warrior.animations.stop('walk-right'); if (this.warrior.body.velocity.x != 0) {this.warrior.body.velocity.x -= this.speed;}}, this);
-        
-        this.game.time.advancedTiming = true;
     },
 
     update: function () {
@@ -196,11 +194,6 @@ BasicGame.Game.prototype = {
         this.game.physics.arcade.overlap(this.warrior, this.monster1, this.quitGame, null, this);
         this.game.physics.arcade.overlap(this.warrior, this.monster2, this.quitGame, null, this);
         this.game.physics.arcade.overlap(this.warrior, this.monster3, this.quitGame, null, this);
-    },
-    
-    render: function()
-    {
-        this.game.debug.text(this.game.time.fps, 400, 300, 'white');
     },
     
     quitGame: function () {
