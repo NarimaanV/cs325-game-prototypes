@@ -17,7 +17,7 @@ window.onload = function() {
     
     function preload() {
         // Load images
-        game.load.image( 'asteroid', 'assets/asteroid-xs.png' );
+        game.load.image( 'asteroid', 'assets/asteroid.png' );
         game.load.image( 'bullet', 'assets/bullet.png' );
         game.load.image( 'player', 'assets/shiphat.png' );
         game.load.image( 'background', 'assets/space.jpg' );
@@ -34,12 +34,18 @@ window.onload = function() {
     var asteroidTime = 0; // Delay timer variable used when spawning asteroids
     var background, earth, player, crosshair; // Sprite/images for the background, earth, and the player
     var endGameText, gameStartText, scoreText; // Text displayed when the game ends
-    var gameStarted = false; // Boolean for when game is started
-    var counter = 0; // Counter for keeping track of asteroids destoryed
+    var gameStarted = false, gameEnded = false; // Boolean for when game is started/ended
     var style = {fill:'white', align:'center', fontSize:80}; // Text style for end-game text
-    var limit = 60, score = 0; // Maximum number of asteroids that will spawn
+    var score = 0; // Maximum number of asteroids that will spawn
     
     function create() {
+        speed = 6;
+        bulletTime = 0;
+        asteroidTime = 0;
+        gameStarted = false;
+        gameEnded = false;
+        score = 0;
+        
         background = game.add.image( 0, 0, 'background'); // Spawn background
         
         // Spawn Earth and position it
@@ -140,16 +146,16 @@ window.onload = function() {
             scoreText = game.add.text(0, 0, score.toString(), style);
         }
         
+        // To restart game
+        if (gameEnded && game.input.keyboard.isDown(Phaser.KeyCode.SPACEBAR))
+        {
+            game.state.restart(true, true);
+        }
+        
         // Spawn asteroids
         if (gameStarted)
         {
             spawnAsteroid();
-        }
-        
-        // When maximum number of asteroids destroyed
-        if (counter === limit)
-        {
-            endGameWin();    
         }
         
         // Dealing with bullet-asteroid, earth-asteroid, and player-asteroid collisions
@@ -176,7 +182,7 @@ window.onload = function() {
                 bullet.reset(player.x, player.y + 25);
                 bullet.rotation = game.physics.arcade.angleToPointer(bullet);
                 game.physics.arcade.moveToXY(bullet, crosshair.x, crosshair.y, 400);
-                bulletTime = game.time.now + 400;
+                bulletTime = game.time.now + 500;
             }
         }
 
@@ -195,7 +201,7 @@ window.onload = function() {
             {
                 // Spawn asteroid
                 asteroid.reset(1200 + 384, Math.floor((Math.random() * 5) + 1) * 100);
-                asteroid.body.velocity.x = -100;
+                asteroid.body.velocity.x = -200;
                 asteroidTime = game.time.now + 1500;
             }
         }
@@ -211,7 +217,6 @@ window.onload = function() {
         explosion.animations.play('explode', null, false, true);
         bullet.kill();
         asteroid.kill();
-        counter += 1;
         score += 100;
         scoreText.setText("Score: " + score);
 
@@ -223,17 +228,12 @@ window.onload = function() {
         player.destroy();
         asteroids.destroy();
         bullets.destroy();
+        explosions.destroy();
         earth.destroy();
-        endGameText = game.add.text(600, 300, 'Game Over!\nRefresh to Play Again', style);
+        scoreText.destroy();
+        endGameText = game.add.text(600, 300, 'Game Over!\nFinal Score: ' + score + '\nHit to Play Again', style);
         endGameText.anchor.setTo(0.5);
-    }
-    
-    // If player destroys all asteroids
-    function endGameWin()
-    {
-        asteroids.destroy();
-        endGameText = game.add.text(600, 300, 'You Win!\nRefresh to\nPlay Again', style);
-        endGameText.anchor.setTo(0.5);
+        gameEnded = true;
     }
     
 };
