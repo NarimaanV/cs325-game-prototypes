@@ -18,10 +18,11 @@ window.onload = function() {
     function preload() {
         // Load images
         game.load.image( 'asteroid', 'assets/asteroid-xs.png' );
-        game.load.image( 'bullet', 'assets/bullet-s.png' );
-        game.load.image( 'player', 'assets/cowboy-s.png' );
+        game.load.image( 'bullet', 'assets/bullet.png' );
+        game.load.image( 'player', 'assets/shiphat.png' );
         game.load.image( 'background', 'assets/space.jpg' );
         game.load.image( 'earth', 'assets/earth.png' );
+        game.load.image( 'crosshair', 'assets/crosshair.png' );
     }
     
     var speed = 6; // Player speed when moving
@@ -29,12 +30,12 @@ window.onload = function() {
     var asteroid, asteroids; // Incoming asteroids
     var bulletTime = 0; // Delay timer variable used when firing bullets
     var asteroidTime = 0; // Delay timer variable used when spawning asteroids
-    var background, earth, player; // Sprite/images for the background, earth, and the player
-    var endGameText, gameStartText; // Text displayed when the game ends
+    var background, earth, player, crosshair; // Sprite/images for the background, earth, and the player
+    var endGameText, gameStartText, scoreText; // Text displayed when the game ends
     var gameStarted = false; // Boolean for when game is started
     var counter = 0; // Counter for keeping track of asteroids destoryed
     var style = {fill:'white', align:'center', fontSize:80}; // Text style for end-game text
-    var limit = 60; // Maximum number of asteroids that will spawn
+    var limit = 60, score = 0; // Maximum number of asteroids that will spawn
     
     function create() {
         background = game.add.image( 0, 0, 'background'); // Spawn background
@@ -46,24 +47,22 @@ window.onload = function() {
         earth.scale.setTo(0.5, 0.5);
         earth.angle = 25;
         
-        // Spawn player and position it
-        player = game.add.sprite(game.world.centerX*0.5, game.world.centerY, 'player');
-        player.anchor.setTo(0.5, 0.5);
-        player.scale.setTo(0.4);
-        game.physics.enable( player, Phaser.Physics.ARCADE );
-        player.body.collideWorldBounds = true;
-        
         // Create group of bullets used when firing
         bullets = game.add.group();
         bullets.enableBody = true;
         bullets.physicsBodyType = Phaser.Physics.ARCADE;
         bullets.createMultiple(30, 'bullet');
-        bullets.setAll('anchor.x', 1);
+        bullets.setAll('anchor.x', 0.5);
         bullets.setAll('anchor.y', 0.5);
-        bullets.setAll('scale.x', -0.1);
-        bullets.setAll('scale.y', 0.1);
         bullets.setAll('outOfBoundsKill', true);
         bullets.setAll('checkWorldBounds', true);
+        
+        // Spawn player and position it
+        player = game.add.sprite(game.world.centerX*0.5, game.world.centerY, 'player');
+        player.anchor.setTo(0.5, 0.5);
+        //player.scale.setTo(0.4);
+        game.physics.enable( player, Phaser.Physics.ARCADE );
+        player.body.collideWorldBounds = true;
         
         // Create group of asteroids used for spawning towards player
         asteroids = game.add.group();
@@ -75,41 +74,61 @@ window.onload = function() {
         asteroids.setAll('outOfBoundsKill', true);
         asteroids.setAll('checkWorldBounds', true);
         
+        crosshair = game.add.sprite(600, 300, 'crosshair');
+        crosshair.anchor.setTo(0.5, 0.5);
+        
         // Beginning game text
         gameStartText = game.add.text(600, 300, 'Hit Enter\nto Begin!', style);
         gameStartText.anchor.setTo(0.5);
+        
+        // Prevent input keys from scrolling the screen
+        game.input.keyboard.addKeyCapture(Phaser.KeyCode.UP);
+        game.input.keyboard.addKeyCapture(Phaser.KeyCode.DOWN);
+        game.input.keyboard.addKeyCapture(Phaser.KeyCode.LEFT);
+        game.input.keyboard.addKeyCapture(Phaser.KeyCode.RIGHT);
+        game.input.keyboard.addKeyCapture(Phaser.KeyCode.SPACEBAR);
+        game.input.keyboard.addKeyCapture(Phaser.KeyCode.ENTER);
     }
     
     function update() {
-        // Prevent input keys from scrolling the screen
-        game.input.keyboard.addKeyCapture(Phaser.Keyboard.UP);
-        game.input.keyboard.addKeyCapture(Phaser.Keyboard.DOWN);
-        game.input.keyboard.addKeyCapture(Phaser.Keyboard.SPACEBAR);
-        game.input.keyboard.addKeyCapture(Phaser.Keyboard.ENTER);
+        
         
         // To move player up
-        if (game.input.keyboard.isDown(Phaser.Keyboard.UP))
+        if (game.input.keyboard.isDown(Phaser.KeyCode.W))
         {
             player.y -= speed;
         }
         
         // To move player down
-        if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN))
+        if (game.input.keyboard.isDown(Phaser.KeyCode.S))
         {
             player.y += speed;
         }
         
+        // To move player left
+        if (player.x >= game.world.centerX*0.5 && game.input.keyboard.isDown(Phaser.KeyCode.A))
+        {
+            player.x -= speed;
+        }
+        
+        // To move player right
+        if (player.x <= game.world.centerX*0.5 + 200 && game.input.keyboard.isDown(Phaser.KeyCode.D))
+        {
+            player.x += speed;
+        }
+        
         // To fire bullets
-        if (game.input.keyboard.isDown(Phaser.Keyboard.SPACEBAR))
+        if (game.input.activePointer.leftButton.isDown)
         {
             fireBullet();
         }
         
         // To start game
-        if (game.input.keyboard.isDown(Phaser.Keyboard.ENTER))
+        if (!gameStarted && game.input.keyboard.isDown(Phaser.KeyCode.SPACEBAR))
         {
             gameStartText.destroy();
             gameStarted = true;
+            scoreText = game.add.text(0, 0, score.toString(), style);
         }
         
         // Spawn asteroids
@@ -127,7 +146,11 @@ window.onload = function() {
         // Dealing with bullet-asteroid, earth-asteroid, and player-asteroid collisions
         game.physics.arcade.overlap(bullets, asteroids, bulletHitAsteroid, null, this);
         game.physics.arcade.overlap(earth, asteroids, endGameLoss, null, this);
-        game.physics.arcade.overlap(player, asteroids, endGameLoss, null, this);   
+        game.physics.arcade.overlap(player, asteroids, endGameLoss, null, this);
+        crosshair.x = game.input.mousePointer.x;
+        crosshair.y = game.input.mousePointer.y;
+        player.rotation = game.physics.arcade.angleToPointer(player);
+
     }
     
     function fireBullet()
@@ -141,8 +164,9 @@ window.onload = function() {
             if (bullet)
             {
                 // Fire bullets
-                bullet.reset(player.x + 80, player.y);
-                bullet.body.velocity.x = 400;
+                bullet.reset(player.x, player.y + 25);
+                bullet.rotation = game.physics.arcade.angleToPointer(bullet);
+                game.physics.arcade.moveToXY(bullet, crosshair.x, crosshair.y, 400);
                 bulletTime = game.time.now + 400;
             }
         }
@@ -161,9 +185,9 @@ window.onload = function() {
             if (asteroid)
             {
                 // Spawn asteroid
-                asteroid.reset(1200, Math.floor((Math.random() * 5) + 1) * 100);
-                asteroid.body.velocity.x = -300;
-                asteroidTime = game.time.now + 1000;
+                asteroid.reset(1200 + 384, Math.floor((Math.random() * 5) + 1) * 100);
+                asteroid.body.velocity.x = -100;
+                asteroidTime = game.time.now + 1500;
             }
         }
 
@@ -175,6 +199,7 @@ window.onload = function() {
         bullet.kill();
         asteroid.kill();
         counter += 1;
+        score += 100;
     }
     
     // Collision manager for earth-asteroid or player-asteroid collision, resulting in game over
