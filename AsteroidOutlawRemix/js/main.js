@@ -23,10 +23,12 @@ window.onload = function() {
         game.load.image( 'background', 'assets/space.jpg' );
         game.load.image( 'earth', 'assets/earth.png' );
         game.load.image( 'crosshair', 'assets/crosshair.png' );
+        game.load.spritesheet( 'explosion', 'assets/explosion.png', 96, 96);
     }
     
     var speed = 6; // Player speed when moving
     var bullet, bullets; // Bullets the player fires
+    var explosion, explosions;
     var asteroid, asteroids; // Incoming asteroids
     var bulletTime = 0; // Delay timer variable used when firing bullets
     var asteroidTime = 0; // Delay timer variable used when spawning asteroids
@@ -77,8 +79,15 @@ window.onload = function() {
         crosshair = game.add.sprite(600, 300, 'crosshair');
         crosshair.anchor.setTo(0.5, 0.5);
         
+        explosions = game.add.group();
+        explosions.createMultiple(30, 'explosion');
+        explosions.setAll('anchor.x', 0.5);
+        explosions.setAll('anchor.y', 0.5);
+        explosions.setAll('scale.x', 2);
+        explosions.setAll('scale.y', 2);
+        
         // Beginning game text
-        gameStartText = game.add.text(600, 300, 'Hit Enter\nto Begin!', style);
+        gameStartText = game.add.text(600, 300, 'Hit Space\nto Begin!', style);
         gameStartText.anchor.setTo(0.5);
         
         // Prevent input keys from scrolling the screen
@@ -196,10 +205,16 @@ window.onload = function() {
     // Collision manager for bullet-asteroid collision
     function bulletHitAsteroid(bullet, asteroid)
     {
+        explosion = explosions.getFirstExists(false);
+        explosion.reset(bullet.x, bullet.y);
+        explosion.animations.add('explode', null, 12);
+        explosion.animations.play('explode', null, false, true);
         bullet.kill();
         asteroid.kill();
         counter += 1;
         score += 100;
+        scoreText.setText("Score: " + score);
+
     }
     
     // Collision manager for earth-asteroid or player-asteroid collision, resulting in game over
