@@ -26,29 +26,26 @@ BasicGame.Game = function (game) {
     // Create your own variables.
     this.bouncy = null;
     this.player = null;
+    this.background = null
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
         this.game.stage.backgroundColor = "#FFFFFF";
+        this.game.add.image(0, 0, 'background');
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.array = [this.change2rock, this.change2paper, this.change2scissors];
         this.player = this.game.add.sprite(400, 300, 'rock');
         this.player.anchor.setTo(0.5, 0.5);
-        this.rightKey = this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT);
-        this.rightKey.onDown.add(this.change2rock, this);
-        this.leftKey = this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT);
-        this.leftKey.onDown.add(this.change2paper, this);
-        this.upKey = this.game.input.keyboard.addKey(Phaser.KeyCode.UP);
-        this.upKey.onDown.add(this.change2scissors, this);
+
         this.spaceKey = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-        this.spaceKey.onDown.add(this.array[0], this)
+        
         this.game.physics.arcade.enable(this.player);
     },
 
     update: function () {
-        
+            this.array[2]();
     },
     
 //    render: function() {
