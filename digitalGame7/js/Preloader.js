@@ -28,7 +28,10 @@ BasicGame.Preloader.prototype = {
 		this.load.atlas('playButton', 'assets/play_button.png', 'assets/play_button.json');
 		this.load.audio('titleMusic', ['assets/Poppers and Prosecco.mp3']);
 		//	+ lots of other required assets here
-        this.load.image( 'logo', 'assets/phaser.png' );
+        this.load.image('rock', 'assets/rock.png');
+        this.load.image('paper', 'assets/paper.png');
+        this.load.image('scissors', 'assets/scissors.png');
+
 	},
 
 	create: function () {

@@ -25,17 +25,35 @@ BasicGame.Game = function (game) {
     
     // Create your own variables.
     this.bouncy = null;
+    this.player = null;
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
-        
+        this.game.stage.backgroundColor = "#FFFFFF";
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.array = [this.change2rock, this.change2paper, this.change2scissors];
+        this.player = this.game.add.sprite(400, 300, 'rock');
+        this.player.anchor.setTo(0.5, 0.5);
+        this.rightKey = this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT);
+        this.rightKey.onDown.add(this.change2rock, this);
+        this.leftKey = this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT);
+        this.leftKey.onDown.add(this.change2paper, this);
+        this.upKey = this.game.input.keyboard.addKey(Phaser.KeyCode.UP);
+        this.upKey.onDown.add(this.change2scissors, this);
+        this.spaceKey = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
+        this.spaceKey.onDown.add(this.array[0], this)
+        this.game.physics.arcade.enable(this.player);
     },
 
     update: function () {
         
     },
+    
+//    render: function() {
+//        this.game.debug.body(this.player);
+//    },
 
     quitGame: function (pointer) {
 
@@ -45,6 +63,26 @@ BasicGame.Game.prototype = {
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');
 
+    },
+    
+    change2rock: function() {
+        this.width = this.game.cache.getImage('rock').width;
+        this.height = this.game.cache.getImage('rock').height;
+        this.player.loadTexture('rock');
+        this.player.body.setSize(this.width, this.height, 0, 0);
+    },
+    
+    change2paper: function() {
+        this.width = this.game.cache.getImage('paper').width;
+        this.height = this.game.cache.getImage('paper').height;
+        this.player.loadTexture('paper');
+        this.player.body.setSize(this.width, this.height, 0, 0);
+    },
+    
+    change2scissors: function() {
+        this.width = this.game.cache.getImage('scissors').width;
+        this.height = this.game.cache.getImage('scissors').height;
+        this.player.loadTexture('scissors');
+        this.player.body.setSize(this.width, this.height, 0, 0);
     }
-
 };
