@@ -26,26 +26,51 @@ BasicGame.Game = function (game) {
     // Create your own variables.
     this.bouncy = null;
     this.player = null;
-    this.background = null
+    this.background = null;
+    this.speed = 2000
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
         this.game.stage.backgroundColor = "#FFFFFF";
-        this.game.add.image(0, 0, 'background');
+        this.game.add.tileSprite(0, 0, 768, 5120, 'background');
+        this.game.world.setBounds(0, 0, 768, 5120);
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.array = [this.change2rock, this.change2paper, this.change2scissors];
         this.player = this.game.add.sprite(400, 300, 'rock');
         this.player.anchor.setTo(0.5, 0.5);
 
         this.spaceKey = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
-        
         this.game.physics.arcade.enable(this.player);
+        this.player.body.collideWorldBounds = true;
+        this.game.camera.follow(this.player);
+        
+        this.upKey = this.game.input.keyboard.addKey(Phaser.KeyCode.UP);
+        this.downKey = this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN);
+        this.leftKey = this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT);
+        this.rightKey = this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT);
+        
+        this.input.keyboard.addKeyCapture(this.upKey);
+        this.input.keyboard.addKeyCapture(this.downKey);
+        this.input.keyboard.addKeyCapture(this.leftKey);
+        this.input.keyboard.addKeyCapture(this.rightKey);
+        
+        this.upKey.onDown.add(function() {if (this.player.body.velocity.y == 0) {this.player.body.velocity.y -= this.speed;}}, this);
+        this.upKey.onUp.add(function() {if (this.player.body.velocity.y != 0) {this.player.body.velocity.y += this.speed;}}, this);
+        
+        this.downKey.onDown.add(function() {if (this.player.body.velocity.y == 0) {this.player.body.velocity.y += this.speed;}}, this);
+        this.downKey.onUp.add(function() {if (this.player.body.velocity.y != 0) {this.player.body.velocity.y -= this.speed;}}, this);
+        
+        this.leftKey.onDown.add(function() {if (this.player.body.velocity.x == 0) {this.player.body.velocity.x -= this.speed;}}, this);
+        this.leftKey.onUp.add(function() {if (this.player.body.velocity.x != 0) {this.player.body.velocity.x += this.speed;}}, this);
+        
+        this.rightKey.onDown.add(function() {if (this.player.body.velocity.x == 0) {this.player.body.velocity.x += this.speed;}}, this);
+        this.rightKey.onUp.add(function() {if (this.player.body.velocity.x != 0) {this.player.body.velocity.x -= this.speed;}}, this);
     },
 
     update: function () {
-            this.array[2]();
+        
     },
     
 //    render: function() {
