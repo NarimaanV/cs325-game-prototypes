@@ -56,6 +56,7 @@ BasicGame.Game.prototype = {
         this.input.keyboard.addKeyCapture(this.downKey);
         this.input.keyboard.addKeyCapture(this.leftKey);
         this.input.keyboard.addKeyCapture(this.rightKey);
+        this.input.keyboard.addKeyCapture(this.spaceKey);
         
         this.bouncy = this.game.add.sprite(768/2, -128, 'paper');
         this.bouncy.anchor.setTo(0.5, 0.5);
@@ -65,14 +66,11 @@ BasicGame.Game.prototype = {
         this.enemies = this.game.add.group();
         this.enemies.enableBody = true;
         this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
-        this.enemies.createMultiple(30 , 'bullet');
-        this.enemies.setAll('anchor.x', 1);
+        this.enemies.createMultiple(30 , 'rock');
+        this.enemies.setAll('anchor.x', 0.5);
         this.enemies.setAll('anchor.y', 0.5);
-        this.enemies.setAll('scale.x', -0.1);
-        this.enemies.setAll('scale.y', 0.1);
         this.enemies.setAll('outOfBoundsKill', true);
         this.enemies.setAll('checkWorldBounds', true);
-        
     },
 
     update: function () {
@@ -105,6 +103,11 @@ BasicGame.Game.prototype = {
         {
             this.bouncy.x = 768 + 36.5;
         }
+        
+        if (this.spaceKey.isDown)
+        {
+            this.change2paper(this.player);
+        }
     },
     
     render: function() {
@@ -122,25 +125,25 @@ BasicGame.Game.prototype = {
 
     },
     
-    change2rock: function() {
+    change2rock: function(object) {
         this.width = this.game.cache.getImage('rock').width;
         this.height = this.game.cache.getImage('rock').height;
-        this.player.loadTexture('rock');
-        this.player.body.setSize(this.width, this.height, 0, 0);
+        object.loadTexture('rock');
+        object.body.setSize(this.width, this.height, 0, 0);
     },
     
-    change2paper: function() {
+    change2paper: function(object) {
         this.width = this.game.cache.getImage('paper').width;
         this.height = this.game.cache.getImage('paper').height;
-        this.player.loadTexture('paper');
-        this.player.body.setSize(this.width, this.height, 0, 0);
+        object.loadTexture('paper');
+        object.body.setSize(this.width, this.height, 0, 0);
     },
     
-    change2scissors: function() {
+    change2scissors: function(object) {
         this.width = this.game.cache.getImage('scissors').width;
         this.height = this.game.cache.getImage('scissors').height;
-        this.player.loadTexture('scissors');
-        this.player.body.setSize(this.width, this.height, 0, 0);
+        object.loadTexture('scissors');
+        object.body.setSize(this.width, this.height, 0, 0);
     },
     
     movePlayerUp: function() {
