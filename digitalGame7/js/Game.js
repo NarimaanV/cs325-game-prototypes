@@ -29,6 +29,7 @@ BasicGame.Game = function (game) {
     this.background = null;
     this.speed = 15;
     this.enemies = null, this.enemy = null;
+    this.delay = 0;
 };
 
 BasicGame.Game.prototype = {
@@ -38,7 +39,7 @@ BasicGame.Game.prototype = {
         this.background = this.game.add.tileSprite(0, 0, 768, 512, 'background');
         this.game.world.setBounds(0, 0, 768, 512);
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
-        this.array = [this.change2rock, this.change2paper, this.change2scissors];
+        this.array = ['rock', 'paper', 'scissors'];
         this.player = this.game.add.sprite(768/2, 128*3, 'rock');
         this.player.anchor.setTo(0.5, 0.5);
 
@@ -104,9 +105,10 @@ BasicGame.Game.prototype = {
             this.bouncy.x = 768 + 36.5;
         }
         
-        if (this.spaceKey.isDown)
+        if (this.spaceKey.isDown && this.game.time.now > this.delay)
         {
-            this.change2paper(this.player);
+            this.change(this.player, this.array[Math.floor(Math.random() * 3)]);
+            this.delay = this.game.time.now + 250;
         }
     },
     
@@ -125,25 +127,11 @@ BasicGame.Game.prototype = {
 
     },
     
-    change2rock: function(object) {
-        this.width = this.game.cache.getImage('rock').width;
-        this.height = this.game.cache.getImage('rock').height;
-        object.loadTexture('rock');
-        object.body.setSize(this.width, this.height, 0, 0);
-    },
-    
-    change2paper: function(object) {
-        this.width = this.game.cache.getImage('paper').width;
-        this.height = this.game.cache.getImage('paper').height;
-        object.loadTexture('paper');
-        object.body.setSize(this.width, this.height, 0, 0);
-    },
-    
-    change2scissors: function(object) {
-        this.width = this.game.cache.getImage('scissors').width;
-        this.height = this.game.cache.getImage('scissors').height;
-        object.loadTexture('scissors');
-        object.body.setSize(this.width, this.height, 0, 0);
+    change: function(object, name) {
+        this.width = this.game.cache.getImage(name).width;
+        this.height = this.game.cache.getImage(name).height;
+        object.loadTexture(name);
+        object.body.setSize(this.width, this.height, 0, 0)
     },
     
     movePlayerUp: function() {
