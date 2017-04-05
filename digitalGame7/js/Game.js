@@ -27,18 +27,19 @@ BasicGame.Game = function (game) {
     this.bouncy = null;
     this.player = null;
     this.background = null;
-    this.speed = 2000
+    this.speed = 15;
+    this.enemies = null, this.enemy = null;
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
         this.game.stage.backgroundColor = "#FFFFFF";
-        this.game.add.tileSprite(0, 0, 768, 5120, 'background');
-        this.game.world.setBounds(0, 0, 768, 5120);
+        this.background = this.game.add.tileSprite(0, 0, 768, 512, 'background');
+        this.game.world.setBounds(0, 0, 768, 512);
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.array = [this.change2rock, this.change2paper, this.change2scissors];
-        this.player = this.game.add.sprite(400, 300, 'rock');
+        this.player = this.game.add.sprite(768/2, 128*3, 'rock');
         this.player.anchor.setTo(0.5, 0.5);
 
         this.spaceKey = this.game.input.keyboard.addKey(Phaser.KeyCode.SPACEBAR);
@@ -56,26 +57,60 @@ BasicGame.Game.prototype = {
         this.input.keyboard.addKeyCapture(this.leftKey);
         this.input.keyboard.addKeyCapture(this.rightKey);
         
-        this.upKey.onDown.add(function() {if (this.player.body.velocity.y == 0) {this.player.body.velocity.y -= this.speed;}}, this);
-        this.upKey.onUp.add(function() {if (this.player.body.velocity.y != 0) {this.player.body.velocity.y += this.speed;}}, this);
+        this.bouncy = this.game.add.sprite(768/2, -128, 'paper');
+        this.bouncy.anchor.setTo(0.5, 0.5);
+        this.game.physics.arcade.enable(this.bouncy);
+        this.bouncy.body.velocity.x = -500;
         
-        this.downKey.onDown.add(function() {if (this.player.body.velocity.y == 0) {this.player.body.velocity.y += this.speed;}}, this);
-        this.downKey.onUp.add(function() {if (this.player.body.velocity.y != 0) {this.player.body.velocity.y -= this.speed;}}, this);
+        this.enemies = this.game.add.group();
+        this.enemies.enableBody = true;
+        this.enemies.physicsBodyType = Phaser.Physics.ARCADE;
+        this.enemies.createMultiple(30 , 'bullet');
+        this.enemies.setAll('anchor.x', 1);
+        this.enemies.setAll('anchor.y', 0.5);
+        this.enemies.setAll('scale.x', -0.1);
+        this.enemies.setAll('scale.y', 0.1);
+        this.enemies.setAll('outOfBoundsKill', true);
+        this.enemies.setAll('checkWorldBounds', true);
         
-        this.leftKey.onDown.add(function() {if (this.player.body.velocity.x == 0) {this.player.body.velocity.x -= this.speed;}}, this);
-        this.leftKey.onUp.add(function() {if (this.player.body.velocity.x != 0) {this.player.body.velocity.x += this.speed;}}, this);
-        
-        this.rightKey.onDown.add(function() {if (this.player.body.velocity.x == 0) {this.player.body.velocity.x += this.speed;}}, this);
-        this.rightKey.onUp.add(function() {if (this.player.body.velocity.x != 0) {this.player.body.velocity.x -= this.speed;}}, this);
     },
 
     update: function () {
+        if (this.upKey.isDown)
+        {
+            this.movePlayerUp();
+        }
         
+        if (this.downKey.isDown)
+        {
+            this.movePlayerDown();
+        }
+        
+        if (this.leftKey.isDown)
+        {
+            this.player.position.x -= this.speed;
+        }
+        
+        if (this.rightKey.isDown)
+        {
+            this.player.position.x += this.speed;
+        }
+        
+        if (this.bouncy.y >= 512 + 50)
+        {
+            this.bouncy.kill();
+        }
+        
+        if (this.bouncy.x <= -36.5)
+        {
+            this.bouncy.x = 768 + 36.5;
+        }
     },
     
-//    render: function() {
-//        this.game.debug.body(this.player);
-//    },
+    render: function() {
+        this.game.debug.body(this.player);
+        this.game.debug.body(this.bouncy);
+    },
 
     quitGame: function (pointer) {
 
@@ -106,5 +141,15 @@ BasicGame.Game.prototype = {
         this.height = this.game.cache.getImage('scissors').height;
         this.player.loadTexture('scissors');
         this.player.body.setSize(this.width, this.height, 0, 0);
+    },
+    
+    movePlayerUp: function() {
+        this.background.tilePosition.y += this.speed;
+        this.bouncy.position.y += this.speed;
+    },
+
+    movePlayerDown: function() {
+        this.background.tilePosition.y -= this.speed;
+        this.bouncy.position.y -= this.speed;
     }
 };

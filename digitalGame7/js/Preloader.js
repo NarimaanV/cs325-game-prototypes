@@ -31,7 +31,7 @@ BasicGame.Preloader.prototype = {
         this.load.image('rock', 'assets/rock.png');
         this.load.image('paper', 'assets/paper.png');
         this.load.image('scissors', 'assets/scissors.png');
-        this.load.image('background', 'assets/background.png');
+        this.load.image('background', 'assets/background3.png');
 
 	},
 
