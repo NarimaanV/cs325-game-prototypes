@@ -30,11 +30,18 @@ BasicGame.Game = function (game) {
     this.enemies = null, this.enemy = null;
     this.delay = 0;
     this.score = 0;
+    this.timer = 0;
+    this.scoreText = null;
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
+        this.speed = 4;
+        this.delay = 0;
+        this.score = 0;
+        this.timer = 60000 * 60;
+        
         this.game.stage.backgroundColor = "#FFFFFF";
         this.background = this.game.add.tileSprite(0, 0, 768, 512, 'background');
         this.game.world.setBounds(0, 0, 768, 512);
@@ -61,6 +68,9 @@ BasicGame.Game.prototype = {
         this.enemies.createMultiple(30 , 'rock');
         this.enemies.setAll('anchor.x', 0.5);
         this.enemies.setAll('anchor.y', 0.5);
+        
+        this.scoreText = this.game.add.text(384, 480, "Score: " + this.score, {fill:'white', align:'center', fontSize:40});
+        this.scoreText.anchor.setTo(0.5, 0.5);
         
         for (var i = 0; i < 6; i++)
         {
@@ -106,6 +116,13 @@ BasicGame.Game.prototype = {
         this.enemies.forEachAlive(this.enemyHandler, this);
         
         this.game.physics.arcade.overlap(this.player, this.enemies, this.collisionHandler, null, this);
+        
+        this.timer -= 1000;
+        
+        if (this.timer <= 0)
+        {
+            this.quitGame();
+        }
     },
     
     enemyHandler: function(enemy) {
@@ -143,6 +160,8 @@ BasicGame.Game.prototype = {
         {
             enemy.kill();
             this.change(player, 'rock');
+            this.score += 10;
+            this.scoreText.setText("Score: " + this.score);
         }
         
         else if (player.key === 'scissors' && enemy.key === 'rock')
@@ -154,6 +173,8 @@ BasicGame.Game.prototype = {
         {
             enemy.kill();
             this.change(player, 'scissors');
+            this.score += 10;
+            this.scoreText.setText("Score: " + this.score);
         }
         
         else if (player.key === 'paper' && enemy.key === 'scissors')
@@ -165,6 +186,8 @@ BasicGame.Game.prototype = {
         {
             enemy.kill();
             this.change(player, 'paper');
+            this.score += 10;
+            this.scoreText.setText("Score: " + this.score);
         }
     },
     
