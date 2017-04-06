@@ -93,11 +93,6 @@ BasicGame.Game.prototype = {
             this.movePlayerUp();
         }
         
-        if (this.downKey.isDown)
-        {
-            this.movePlayerDown();
-        }
-        
         if (this.leftKey.isDown)
         {
             this.player.position.x -= this.speed;
