@@ -48,15 +48,12 @@ BasicGame.Game.prototype = {
         this.game.camera.follow(this.player);
         
         this.upKey = this.game.input.keyboard.addKey(Phaser.KeyCode.UP);
-        this.downKey = this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN);
         this.leftKey = this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT);
         this.rightKey = this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT);
         
         this.input.keyboard.addKeyCapture(this.upKey);
-        this.input.keyboard.addKeyCapture(this.downKey);
         this.input.keyboard.addKeyCapture(this.leftKey);
         this.input.keyboard.addKeyCapture(this.rightKey);
-        this.input.keyboard.addKeyCapture(this.spaceKey);
 
         this.enemies = this.game.add.group();
         this.enemies.enableBody = true;
@@ -88,18 +85,6 @@ BasicGame.Game.prototype = {
                 this.change(this.enemy, this.array[Math.floor(Math.random() * 3)]);
             }
         }
-        
-//        for (var i = 0; i < 6; i++)
-//        {
-//            this.enemy = this.enemies.getFirstExists(false);
-//            
-//            if (this.enemy)
-//            {
-//                this.enemy.reset(768 - i*140, -384);
-//                this.enemy.body.velocity.x = -50;
-//                this.change(this.enemy, this.array[Math.floor(Math.random() * 3)]);
-//            }
-//        }
     },
 
     update: function () {
@@ -125,16 +110,7 @@ BasicGame.Game.prototype = {
         
         this.enemies.forEachAlive(this.enemyHandler, this);
         
-       // this.game.physics.arcade.overlap(this.player, this.enemies, this.collisionHandler, null, this);
-    },
-    
-//    render: function() {
-//        this.game.debug.body(this.player);
-//        this.enemies.forEachAlive(this.renderGroup, this);
-//    },
-    
-    renderGroup: function(enemy) {
-        this.game.debug.body(enemy);
+        this.game.physics.arcade.overlap(this.player, this.enemies, this.collisionHandler, null, this);
     },
     
     enemyHandler: function(enemy) {
