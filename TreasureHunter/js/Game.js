@@ -83,32 +83,36 @@ BasicGame.Game.prototype = {
         this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
         this.goalGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'goalGem');
         this.goalGem.anchor.setTo(0.5);
+        this.game.physics.arcade.enable(this.goalGem);
         this.spawns.splice(this.spawn, 1);
         
         this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
         this.deathGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'deathGem');
         this.deathGem.anchor.setTo(0.5);
+        this.game.physics.arcade.enable(this.deathGem);
         this.spawns.splice(this.spawn, 1);
         
         this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
         this.shrinkGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'shrinkGem');
         this.shrinkGem.anchor.setTo(0.5);
+        this.game.physics.arcade.enable(this.shrinkGem);
         this.spawns.splice(this.spawn, 1);
         
         this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
         this.growGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'growGem');
         this.growGem.anchor.setTo(0.5);
+        this.game.physics.arcade.enable(this.growGem);
         this.spawns.splice(this.spawn, 1);
         
-        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
-        this.freezeGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'freezeGem');
-        this.freezeGem.anchor.setTo(0.5);
-        this.spawns.splice(this.spawn, 1);    
+//        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+//        this.freezeGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'freezeGem');
+//        this.freezeGem.anchor.setTo(0.5);
+//        this.game.physics.arcade.enable(this.freezeGem);
+//        this.spawns.splice(this.spawn, 1);    
         
         this.player = this.add.sprite(this.playerSpawnX, this.playerSpawnY, 'player');
         this.player.anchor.setTo(0.5);
         
-        this.game.physics.arcade.enable(this.player);
         this.game.physics.arcade.enable(this.player);
         this.player.animations.add('walk-down', [0, 1, 2, 3, 4, 5, 6, 7], null, true);
         this.player.animations.add('walk-right', [24, 25, 26, 27, 28, 29, 30, 31], null, true);
@@ -140,9 +144,9 @@ BasicGame.Game.prototype = {
         this.rightKey.onDown.add(function() {this.player.animations.play('walk-right', this.playerFrameRate, true); if (this.player.body.velocity.x == 0) {this.player.body.velocity.x += this.speed;}}, this);
         this.rightKey.onUp.add(function() {this.player.animations.stop('walk-right'); if (this.player.body.velocity.x != 0) {this.player.body.velocity.x -= this.speed;}}, this);
         
-//        this.glow = this.game.add.sprite(this.player.x, this.player.y, 'glow');
-//        this.glow.anchor.setTo(0.5);
-//        this.glow.scale.setTo(0.5);
+        this.glow = this.game.add.sprite(this.player.x, this.player.y, 'glow');
+        this.glow.anchor.setTo(0.5);
+        this.glow.scale.setTo(0.5);
         
         this.livesText = this.game.add.text(0, 0, "Lives: " + this.livesCount, this.style);
         
@@ -155,25 +159,23 @@ BasicGame.Game.prototype = {
         this.timeText = this.game.add.text(400, 0, "Time: " + Math.floor(this.timer.seconds), this.style);
         this.timeText.anchor.setTo(0.5, 0);
         
-        // Use this for "freezing" player!
-        this.upKey.onDown.removeAll(this);
-        this.upKey.onUp.removeAll(this);
-        
-        this.upKey.onDown.add(function() {this.player.animations.play('walk-up', this.playerFrameRate, true); if (this.player.body.velocity.y == 0) {this.player.body.velocity.y -= this.speed;}}, this);
-        this.upKey.onUp.add(function() {this.player.animations.stop('walk-up'); if (this.player.body.velocity.y != 0) {this.player.body.velocity.y += this.speed;}}, this);
     },
 
     update: function () {
         this.timeText.setText("Time: " + Math.floor(this.timer.seconds));
-//        this.glow.x = this.player.x;
-//        this.glow.y = this.player.y;
+        this.glow.x = this.player.x;
+        this.glow.y = this.player.y;
+        
+//        this.game.physics.arcade.overlap(this.player, this.freezeGem, this.playerHitsFreezeGem, null, this);
+        
+        this.game.physics.arcade.overlap(this.player, this.growGem, function () {this.glow.scale.x *= 2; this.glow.scale.y *= 2; this.growGem.kill();}, null, this);
+        
+        this.game.physics.arcade.overlap(this.player, this.shrinkGem, function () {this.glow.scale.x /= 2; this.glow.scale.y /= 2; this.shrinkGem.kill();}, null, this);
+        
+        this.game.physics.arcade.overlap(this.player, this.goalGem, this.playerHitsGoalGem, null, this);
+        this.game.physics.arcade.overlap(this.player, this.deathGem, this.playerHitsDeathGem, null, this);
     },
     
-    render: function ()
-    {
-        this.game.debug.body(this.player);
-    },
-
     quitGame: function (pointer) {
 
         //  Here you should destroy anything you no longer need.
@@ -184,7 +186,73 @@ BasicGame.Game.prototype = {
 
     },
     
-    freezePlayer: function () {
-        
+    playerHitsGoalGem: function (player, goalGem)
+    {
+        this.goalCount++;
+        if (this.goalCount === 3)
+        {
+            this.quitGame();
+        }
+        else
+        {
+            this.goalText.setText("Jewels: " + this.goalCount);
+            this.goalGem.kill();
+            this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+            this.goalGem.reset(this.spawns[this.spawn][0], this.spawns[this.spawn][1]);
+            this.goalGem.anchor.setTo(0.5);
+            this.game.physics.arcade.enable(this.goalGem);
+            this.spawns.splice(this.spawn, 1);  
+        }
+    },
+    
+    playerHitsDeathGem: function (player, deathGem)
+    {
+        this.livesCount--;
+        if (this.livesCount === 0)
+        {
+            this.quitGame();
+        }
+        else
+        {
+            this.livesText.setText("Lives: " + this.livesCount);
+            this.deathGem.kill();
+            this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+            this.deathGem.reset(this.spawns[this.spawn][0], this.spawns[this.spawn][1]);
+            this.deathGem.anchor.setTo(0.5);
+            this.game.physics.arcade.enable(this.deathGem);
+            this.spawns.splice(this.spawn, 1);  
+        }
     }
+    
+//    playerHitsFreezeGem: function (player, freezeGem) {
+//        this.freezePlayer();
+//        this.game.time.events.add(5, this.unfreezePlayer, this);
+//    },
+//    
+//    freezePlayer: function () {
+//        this.player.body.velocity.x = 0;
+//        this.player.body.velocity.y = 0;
+//        this.upKey.onDown.removeAll(this);
+//        this.upKey.onUp.removeAll(this);
+//        this.downKey.onDown.removeAll(this);
+//        this.downKey.onUp.removeAll(this);
+//        this.leftKey.onDown.removeAll(this);
+//        this.leftKey.onUp.removeAll(this);
+//        this.rightKey.onDown.removeAll(this);
+//        this.rightKey.onUp.removeAll(this);
+//    },
+//    
+//    unfreezePlayer: function () {
+//        this.upKey.onDown.add(function() {this.player.animations.play('walk-up', this.playerFrameRate, true); if (this.player.body.velocity.y == 0) {this.player.body.velocity.y -= this.speed;}}, this);
+//        this.upKey.onUp.add(function() {this.player.animations.stop('walk-up'); if (this.player.body.velocity.y != 0) {this.player.body.velocity.y += this.speed;}}, this);
+//        
+//        this.downKey.onDown.add(function() {this.player.animations.play('walk-down', this.playerFrameRate, true); if (this.player.body.velocity.y == 0) {this.player.body.velocity.y += this.speed;}}, this);
+//        this.downKey.onUp.add(function() {this.player.animations.stop('walk-down'); if (this.player.body.velocity.y != 0) {this.player.body.velocity.y -= this.speed;}}, this);
+//        
+//        this.leftKey.onDown.add(function() {this.player.animations.play('walk-left', this.playerFrameRate, true); if (this.player.body.velocity.x == 0) {this.player.body.velocity.x -= this.speed;}}, this);
+//        this.leftKey.onUp.add(function() {this.player.animations.stop('walk-left'); if (this.player.body.velocity.x != 0) {this.player.body.velocity.x += this.speed;}}, this);
+//        
+//        this.rightKey.onDown.add(function() {this.player.animations.play('walk-right', this.playerFrameRate, true); if (this.player.body.velocity.x == 0) {this.player.body.velocity.x += this.speed;}}, this);
+//        this.rightKey.onUp.add(function() {this.player.animations.stop('walk-right'); if (this.player.body.velocity.x != 0) {this.player.body.velocity.x -= this.speed;}}, this);
+//    }
 };
