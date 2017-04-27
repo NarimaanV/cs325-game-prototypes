@@ -44,6 +44,21 @@ BasicGame.Game = function (game) {
 BasicGame.Game.prototype = {
 
     create: function () {
+        this.glow = null;
+        this.player = null;
+        this.test = null;
+        this.goalGem = null, this.deathGem = null, this.shrinkGem = null, this.growGem = null, this.freezeGem = null;
+        this.upKey = null;
+        this.downKey = null;
+        this.leftKey = null;
+        this.rightKey = null;
+        this.speed = 120;
+        this.playerFrameRate = 10;
+        this.playerSpawnX = null, this.playerSpawnY = null;
+        this.spawns = null, this.spawn = null;
+        this.style = {fill:'white', align:'center', fontSize:50};
+        this.livesText = null, this.goalText = null, this.timeText = null;
+        this.livesCount = 3, this.goalCount = 0, this.timer = 0;
         
         
         this.game.stage.backgroundColor = "#CCCCCC";
@@ -137,12 +152,19 @@ BasicGame.Game.prototype = {
         this.timer = this.game.time.create(false);
         this.timer.start();
         
-        this.timeText = this.game.add.text(400, 0, "Time: " + Math.round(this.timer.seconds*10)/10, this.style);
+        this.timeText = this.game.add.text(400, 0, "Time: " + Math.floor(this.timer.seconds), this.style);
         this.timeText.anchor.setTo(0.5, 0);
+        
+        // Use this for "freezing" player!
+        this.upKey.onDown.removeAll(this);
+        this.upKey.onUp.removeAll(this);
+        
+        this.upKey.onDown.add(function() {this.player.animations.play('walk-up', this.playerFrameRate, true); if (this.player.body.velocity.y == 0) {this.player.body.velocity.y -= this.speed;}}, this);
+        this.upKey.onUp.add(function() {this.player.animations.stop('walk-up'); if (this.player.body.velocity.y != 0) {this.player.body.velocity.y += this.speed;}}, this);
     },
 
     update: function () {
-        this.timeText.setText("Time: " + Math.round(this.timer.seconds*10)/10);
+        this.timeText.setText("Time: " + Math.floor(this.timer.seconds));
 //        this.glow.x = this.player.x;
 //        this.glow.y = this.player.y;
     },
@@ -160,6 +182,9 @@ BasicGame.Game.prototype = {
         //  Then let's go back to the main menu.
         this.state.start('MainMenu');
 
+    },
+    
+    freezePlayer: function () {
+        
     }
-
 };
