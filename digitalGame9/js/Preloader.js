@@ -28,7 +28,14 @@ BasicGame.Preloader.prototype = {
 		this.load.atlas('playButton', 'assets/play_button.png', 'assets/play_button.json');
 		this.load.audio('titleMusic', ['assets/Poppers and Prosecco.mp3']);
 		//	+ lots of other required assets here
-        this.load.image( 'logo', 'assets/phaser.png' );
+        this.load.image('logo', 'assets/phaser.png' );
+        this.load.image('glow', 'assets/glowBig.png');
+        this.load.spritesheet('player', 'assets/playerSpritesheetBig.png', 48, 64);
+        this.load.image('goalGem', 'assets/goalGem.png');
+        this.load.image('deathGem', 'assets/deathGem.png');
+        this.load.image('shrinkGem', 'assets/shrinkGem.png');
+        this.load.image('growGem', 'assets/growGem.png');
+        this.load.image('freezeGem', 'assets/freezeGem.png');
 	},
 
 	create: function () {

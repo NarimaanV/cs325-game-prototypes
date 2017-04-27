@@ -24,47 +24,132 @@ BasicGame.Game = function (game) {
     //  But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
     
     // Create your own variables.
-    this.bouncy = null;
+    this.glow = null;
+    this.player = null;
+    this.test = null;
+    this.goalGem = null, this.deathGem = null, this.shrinkGem = null, this.growGem = null, this.freezeGem = null;
+    this.upKey = null;
+    this.downKey = null;
+    this.leftKey = null;
+    this.rightKey = null;
+    this.speed = 120;
+    this.playerFrameRate = 10;
+    this.playerSpawnX = null, this.playerSpawnY = null;
+    this.spawns = null, this.spawn = null;
+    this.style = {fill:'white', align:'center', fontSize:50};
+    this.livesText = null, this.goalText = null, this.timeText = null;
+    this.livesCount = 3, this.goalCount = 0, this.timer = 0;
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
-
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
         
-        // Create a sprite at the center of the screen using the 'logo' image.
-        this.bouncy = this.game.add.sprite( this.game.world.centerX, this.game.world.centerY, 'logo' );
-        // Anchor the sprite at its center, as opposed to its top-left corner.
-        // so it will be truly centered.
-        this.bouncy.anchor.setTo( 0.5, 0.5 );
         
-        // Turn on the arcade physics engine for this sprite.
-        this.game.physics.enable( this.bouncy, Phaser.Physics.ARCADE );
-        // Make it bounce off of the world bounds.
-        this.bouncy.body.collideWorldBounds = true;
+        this.game.stage.backgroundColor = "#CCCCCC";
         
-        // Add some text using a CSS style.
-        // Center it in X, and position its top 15 pixels from the top of the world.
-        var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
-        var text = this.game.add.text( this.game.world.centerX, 15, "Build something amazing.", style );
-        text.anchor.setTo( 0.5, 0.0 );
+        this.playerSpawnX = 400;
+        this.playerSpawnY = 300;
         
-        // When you click on the sprite, you go back to the MainMenu.
-        this.bouncy.inputEnabled = true;
-        this.bouncy.events.onInputDown.add( function() { this.state.start('MainMenu'); }, this );
+        this.spawns = [];
+        
+        for(var i = 50; i <= 750; i += 50)
+        {
+            for (var j = 100; j <= 550; j+= 50)
+            {
+                // player.x and player.y not defined yet dummy
+                if ((i < this.playerSpawnX - 100 || i > this.playerSpawnX + 100) && (j < this.playerSpawnY - 100 || j > this.playerSpawnY + 100))
+                {
+                    this.spawns.push([i, j]);  
+                }
+            }
+        }
+        
+        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+        this.goalGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'goalGem');
+        this.goalGem.anchor.setTo(0.5);
+        this.spawns.splice(this.spawn, 1);
+        
+        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+        this.deathGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'deathGem');
+        this.deathGem.anchor.setTo(0.5);
+        this.spawns.splice(this.spawn, 1);
+        
+        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+        this.shrinkGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'shrinkGem');
+        this.shrinkGem.anchor.setTo(0.5);
+        this.spawns.splice(this.spawn, 1);
+        
+        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+        this.growGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'growGem');
+        this.growGem.anchor.setTo(0.5);
+        this.spawns.splice(this.spawn, 1);
+        
+        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+        this.freezeGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'freezeGem');
+        this.freezeGem.anchor.setTo(0.5);
+        this.spawns.splice(this.spawn, 1);    
+        
+        this.player = this.add.sprite(this.playerSpawnX, this.playerSpawnY, 'player');
+        this.player.anchor.setTo(0.5);
+        
+        this.game.physics.arcade.enable(this.player);
+        this.game.physics.arcade.enable(this.player);
+        this.player.animations.add('walk-down', [0, 1, 2, 3, 4, 5, 6, 7], null, true);
+        this.player.animations.add('walk-right', [24, 25, 26, 27, 28, 29, 30, 31], null, true);
+        this.player.animations.add('walk-left', [16, 17, 18, 19, 20, 21, 22, 23], null, true);
+        this.player.animations.add('walk-up', [8, 9, this.playerFrameRate, 11, 12, 13, 14, 15], null, true);
+        this.player.body.collideWorldBounds = true;
+        
+        this.upKey = this.game.input.keyboard.addKey(Phaser.KeyCode.UP);
+        this.downKey = this.game.input.keyboard.addKey(Phaser.KeyCode.DOWN);
+        this.leftKey = this.game.input.keyboard.addKey(Phaser.KeyCode.LEFT);
+        this.rightKey = this.game.input.keyboard.addKey(Phaser.KeyCode.RIGHT);
+        this.enterKey = this.game.input.keyboard.addKey(Phaser.KeyCode.ENTER);
+        
+        this.input.keyboard.addKeyCapture(this.upKey);
+        this.input.keyboard.addKeyCapture(this.downKey);
+        this.input.keyboard.addKeyCapture(this.leftKey);
+        this.input.keyboard.addKeyCapture(this.rightKey);
+        this.input.keyboard.addKeyCapture(this.enterKey);
+        
+        this.upKey.onDown.add(function() {this.player.animations.play('walk-up', this.playerFrameRate, true); if (this.player.body.velocity.y == 0) {this.player.body.velocity.y -= this.speed;}}, this);
+        this.upKey.onUp.add(function() {this.player.animations.stop('walk-up'); if (this.player.body.velocity.y != 0) {this.player.body.velocity.y += this.speed;}}, this);
+        
+        this.downKey.onDown.add(function() {this.player.animations.play('walk-down', this.playerFrameRate, true); if (this.player.body.velocity.y == 0) {this.player.body.velocity.y += this.speed;}}, this);
+        this.downKey.onUp.add(function() {this.player.animations.stop('walk-down'); if (this.player.body.velocity.y != 0) {this.player.body.velocity.y -= this.speed;}}, this);
+        
+        this.leftKey.onDown.add(function() {this.player.animations.play('walk-left', this.playerFrameRate, true); if (this.player.body.velocity.x == 0) {this.player.body.velocity.x -= this.speed;}}, this);
+        this.leftKey.onUp.add(function() {this.player.animations.stop('walk-left'); if (this.player.body.velocity.x != 0) {this.player.body.velocity.x += this.speed;}}, this);
+        
+        this.rightKey.onDown.add(function() {this.player.animations.play('walk-right', this.playerFrameRate, true); if (this.player.body.velocity.x == 0) {this.player.body.velocity.x += this.speed;}}, this);
+        this.rightKey.onUp.add(function() {this.player.animations.stop('walk-right'); if (this.player.body.velocity.x != 0) {this.player.body.velocity.x -= this.speed;}}, this);
+        
+//        this.glow = this.game.add.sprite(this.player.x, this.player.y, 'glow');
+//        this.glow.anchor.setTo(0.5);
+//        this.glow.scale.setTo(0.5);
+        
+        this.livesText = this.game.add.text(0, 0, "Lives: " + this.livesCount, this.style);
+        
+        this.goalText = this.game.add.text(600, 0, "Jewels: " + this.goalCount, this.style);
+        this.goalText.anchor.setTo(0.125, 0);
+        
+        this.timer = this.game.time.create(false);
+        this.timer.start();
+        
+        this.timeText = this.game.add.text(400, 0, "Time: " + Math.round(this.timer.seconds*10)/10, this.style);
+        this.timeText.anchor.setTo(0.5, 0);
     },
 
     update: function () {
-
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
-        
-        // Accelerate the 'logo' sprite towards the cursor,
-        // accelerating at 500 pixels/second and moving no faster than 500 pixels/second
-        // in X or Y.
-        // This function returns the rotation angle that makes it visually match its
-        // new trajectory.
-        this.bouncy.rotation = this.game.physics.arcade.accelerateToPointer( this.bouncy, this.game.input.activePointer, 500, 500, 500 );
+        this.timeText.setText("Time: " + Math.round(this.timer.seconds*10)/10);
+//        this.glow.x = this.player.x;
+//        this.glow.y = this.player.y;
+    },
+    
+    render: function ()
+    {
+        this.game.debug.body(this.player);
     },
 
     quitGame: function (pointer) {
