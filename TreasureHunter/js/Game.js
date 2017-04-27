@@ -37,7 +37,7 @@ BasicGame.Game = function (game) {
     this.playerSpawnX = null, this.playerSpawnY = null;
     this.spawns = null, this.spawn = null;
     this.style = {fill:'white', align:'center', fontSize:50};
-    this.livesText = null, this.goalText = null, this.timeText = null;
+    this.livesText = null, this.goalText = null, this.timeText = null, this.endGameText = null;
     this.livesCount = 3, this.goalCount = 0, this.timer = 0;
 };
 
@@ -57,7 +57,7 @@ BasicGame.Game.prototype = {
         this.playerSpawnX = null, this.playerSpawnY = null;
         this.spawns = null, this.spawn = null;
         this.style = {fill:'white', align:'center', fontSize:50};
-        this.livesText = null, this.goalText = null, this.timeText = null;
+        this.livesText = null, this.goalText = null, this.timeText = null, this.endGameText = null;
         this.livesCount = 3, this.goalCount = 0, this.timer = 0;
         
         
@@ -170,7 +170,7 @@ BasicGame.Game.prototype = {
         
         this.game.physics.arcade.overlap(this.player, this.growGem, function () {this.glow.scale.x *= 2; this.glow.scale.y *= 2; this.growGem.kill();}, null, this);
         
-        this.game.physics.arcade.overlap(this.player, this.shrinkGem, function () {this.glow.scale.x /= 2; this.glow.scale.y /= 2; this.shrinkGem.kill();}, null, this);
+        this.game.physics.arcade.overlap(this.player, this.shrinkGem, function () {this.glow.scale.x *= 0.75; this.glow.scale.y *= 0.75; this.shrinkGem.kill();}, null, this);
         
         this.game.physics.arcade.overlap(this.player, this.goalGem, this.playerHitsGoalGem, null, this);
         this.game.physics.arcade.overlap(this.player, this.deathGem, this.playerHitsDeathGem, null, this);
@@ -182,7 +182,18 @@ BasicGame.Game.prototype = {
         //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
 
         //  Then let's go back to the main menu.
-        this.state.start('MainMenu');
+//        this.state.start('MainMenu');
+        
+        this.glow.destroy();
+        this.player.destroy();
+        this.deathGem.destroy();
+        this.goalGem.destroy();
+        this.shrinkGem.destroy();
+        this.growGem.destroy();
+        this.timeText.destroy();
+        this.timer.destroy();
+        this.livesText.destroy();
+        this.goalText.destroy();
 
     },
     
@@ -191,7 +202,11 @@ BasicGame.Game.prototype = {
         this.goalCount++;
         if (this.goalCount === 3)
         {
+            this.game.stage.backgroundColor = "#000000";
+            this.endGameText = this.game.add.text(400, 300, "You Found the Treasure!\nFinal Time: " + Math.floor(this.timer.seconds) + "\n" + "Refresh to Play Again!", this.style);
+            this.endGameText.anchor.setTo(0.5);
             this.quitGame();
+
         }
         else
         {
@@ -210,6 +225,9 @@ BasicGame.Game.prototype = {
         this.livesCount--;
         if (this.livesCount === 0)
         {
+            this.game.stage.backgroundColor = "#000000";
+            this.endGameText = this.game.add.text(400, 300, "Game Over!\nRefresh to Play Again!", this.style);
+            this.endGameText.anchor.setTo(0.5);
             this.quitGame();
         }
         else
