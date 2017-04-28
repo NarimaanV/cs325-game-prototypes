@@ -1,0 +1,105 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Treasure Hunter</title>
+	<script src="js/phaser.min.js"></script>
+	<!-- Boot.js must come first since it creates the BasicGame object
+	that stores all the states. -->
+	<script src="js/Boot.js"></script>
+	<script src="js/Preloader.js"></script>
+	<script src="js/MainMenu.js"></script>
+	<script src="js/Game.js"></script>
+	<!-- main.js must come last since it references the other ones. -->
+	<script src="js/main.js"></script>
+
+<style>
+body
+{
+    color: #777;
+    font-family: "Avenir", Verdana, sans-serif;
+}
+#readme
+{
+    margin-top: 10px;
+}
+</style>
+
+</head>
+<body>
+<div id="game"></div>
+<div id="readme">
+<h2>Treasure Hunter</h2>
+<ul>
+
+<li><strong>High Concept:</strong>
+Scavenge the depths of an ancient crypt to find priceless gems while avoiding deadly gems in near-complete darkness as fast as you can!
+</li>
+
+<li><strong>Theme:</strong>
+Person who glows in the dark
+</li>
+
+<li><strong>Mandated Variety:</strong>
+Keyboard input, the gems spawn completely randomly, and the player is an explorer
+</li>
+
+<li><strong>Player Experience Goals:</strong>
+The player should have fun trying to get the jewels as fast as they can and compete with their friends for the fastest time</li>
+
+<li><strong>Gameplay:</strong>
+Controls: MOVE WITH THE ARROW KEYS.<br>
+Objective: Collect 3 white jewels as quickly as possible. Avoid the red jewels as 3 of those will kill you. Green jewel makes your field of vision bigger, purple jewel makes your field of vision smaller
+</li>
+
+<li><strong>Prototype Goal:</strong>
+Limited field of view, "smart" random spawn generator
+</li>
+
+<li><strong>Features:</strong>
+The player's field of view is dynamic with different jewels, and the random spawns of the jewels makes every game different.
+</li>
+
+<li><strong>Setting/Premise:</strong>
+Game is abstract
+</li>
+
+<li><strong>Story:</strong>
+No story.
+</li>
+
+<li><strong>Target Audience:</strong>
+Any age group that can understand the rules can play
+</li>
+
+<li><strong>Play Time:</strong>
+Depends on the player. Can take 30 seconds or several minutes dependong on how careful the player is.
+</li>
+
+<li><strong>Strategies:</strong>
+Find a good balance of moving quickly to minimize time spend while also not moving so fast that you carelessly hit negative jewels and lose.
+</li>
+
+<li><strong>Prototype Assets:</strong>
+Did you make your prototype assets from scratch? Did you borrow them? Cite your sources here.
+<ul>
+<li>Button: Phaser example <a href="https://phaser.io/examples/v2/buttons/action-on-click">Action On Click</a></li>
+<li><a href="https://opengameart.org/content/2d-rpg-character-walk-spritesheet">Player Spritesheet</a></li>
+<li>I made the glow in the dark "effect" myself in GIMP</li>
+<li><a href="https://opengameart.org/content/gems-3">Gems</a></li>
+<li><a href=""></a></li>
+<li><a href=""></a></li>
+</ul>
+</li>
+
+<li><strong>Prototype Closest Other Game:</strong>
+Which other game most closely resembles your game? If you are borrowing code from a Phaser Example, you must say so here. If you borrow code from elsewhere, you must say so here.
+<ul>
+<li>The code for this example is adapted from the <a href="https://github.com/photonstorm/phaser/tree/v2.6.2/resources/Project%20Templates/Basic">Phaser Basic Project Template</a></li>
+</ul>
+</li>
+
+</ul>
+</div>
+</body>
+</html>

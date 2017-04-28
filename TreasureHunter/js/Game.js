@@ -72,7 +72,6 @@ BasicGame.Game.prototype = {
         {
             for (var j = 100; j <= 550; j+= 50)
             {
-                // player.x and player.y not defined yet dummy
                 if ((i < this.playerSpawnX - 100 || i > this.playerSpawnX + 100) && (j < this.playerSpawnY - 100 || j > this.playerSpawnY + 100))
                 {
                     this.spawns.push([i, j]);  
@@ -243,8 +242,10 @@ BasicGame.Game.prototype = {
     }
     
 //    playerHitsFreezeGem: function (player, freezeGem) {
+//        this.freezeGem.kill();
 //        this.freezePlayer();
-//        this.game.time.events.add(5, this.unfreezePlayer, this);
+//        this.game.time.events.add(Phaser.Timer.SECOND*5, this.unfreezePlayer, this);
+//        
 //    },
 //    
 //    freezePlayer: function () {
