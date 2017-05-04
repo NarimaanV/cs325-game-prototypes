@@ -32,6 +32,8 @@ BasicGame.Preloader.prototype = {
         this.load.image('shrinkGem', 'assets/shrinkGem.png');
         this.load.image('growGem', 'assets/growGem.png');
         this.load.image('freezeGem', 'assets/freezeGem.png');
+        this.load.audio('music', 'assets/music.mp3');
+        this.load.image('button', 'assets/button.png');
 	},
 
 	create: function () {

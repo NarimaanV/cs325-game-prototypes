@@ -32,10 +32,11 @@ BasicGame.Game = function (game) {
     this.downKey = null;
     this.leftKey = null;
     this.rightKey = null;
+    this.music = null;
     this.speed = 120;
     this.playerFrameRate = 10;
     this.playerSpawnX = null, this.playerSpawnY = null;
-    this.spawns = null, this.spawn = null;
+    this.spawns = null, this.spawn = null, this.tempSpawnX = 0, this.tempSpawnY = 0;
     this.style = {fill:'white', align:'center', fontSize:50};
     this.livesText = null, this.goalText = null, this.timeText = null, this.endGameText = null;
     this.livesCount = 3, this.goalCount = 0, this.timer = 0;
@@ -52,14 +53,14 @@ BasicGame.Game.prototype = {
         this.downKey = null;
         this.leftKey = null;
         this.rightKey = null;
+        this.music = null;
         this.speed = 120;
         this.playerFrameRate = 10;
         this.playerSpawnX = null, this.playerSpawnY = null;
-        this.spawns = null, this.spawn = null;
+        this.spawns = null, this.spawn = null, this.tempSpawnX = 0, this.tempSpawnY = 0;
         this.style = {fill:'white', align:'center', fontSize:50};
         this.livesText = null, this.goalText = null, this.timeText = null, this.endGameText = null;
         this.livesCount = 3, this.goalCount = 0, this.timer = 0;
-        
         
         this.game.stage.backgroundColor = "#CCCCCC";
         
@@ -72,42 +73,93 @@ BasicGame.Game.prototype = {
         {
             for (var j = 100; j <= 550; j+= 50)
             {
-                if ((i < this.playerSpawnX - 100 || i > this.playerSpawnX + 100) && (j < this.playerSpawnY - 100 || j > this.playerSpawnY + 100))
-                {
-                    this.spawns.push([i, j]);  
-                }
+                this.spawns.push([i, j]);  
             }
         }
+
+        //(i < this.playerSpawnX - 100 || i > this.playerSpawnX + 100) && (j < this.playerSpawnY - 100 || j > this.playerSpawnY + 100)
         
-        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+        
+        
+//        for(var i = 50; i <= 750; i += 50)
+//        {
+//            this.temp = [];
+//            for (var j = 100; j <= 550; j+= 50)
+//            {
+//                this.temp.push([i, j]);  
+//            }
+//            this.spawns.push(temp);
+//        }
+//
+//        var playerX = 7, playerY = 4;
+//
+//        console.log("Player: " + spawns[playerX][playerY]);
+//
+//        console.log("Top Left: " + spawns[playerX - 2][playerY - 2]);
+//        console.log("Top Center: " + spawns[playerX][playerY - 2]);
+//        console.log("Top Right: " + spawns[playerX + 2][playerY - 2]);
+//
+//        console.log("Center Left: " + spawns[playerX - 2][playerY]);
+//        console.log("Center Right: " + spawns[playerX + 2][playerY]);
+//
+//        console.log("Bottom Left: " + spawns[playerX - 2][playerY + 2]);
+//        console.log("Bottom Center: " + spawns[playerX][playerY + 2]);
+//        console.log("Bottom Right: " + spawns[playerX + 2][playerY + 2]);
+        
+        do
+        {
+            this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+            this.tempSpawnX = this.spawns[this.spawn][0];
+            this.tempSpawnY = this.spawns[this.spawn][1];
+        } while((this.tempSpawnX >= this.playerSpawnX - 100 && this.tempSpawnX <= this.playerSpawnX + 100) && (this.tempSpawnY >= this.playerSpawnY - 100 && this.tempSpawnY <= this.playerSpawnY + 100));
         this.goalGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'goalGem');
         this.goalGem.anchor.setTo(0.5);
         this.game.physics.arcade.enable(this.goalGem);
         this.spawns.splice(this.spawn, 1);
         
-        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+        do
+        {
+            this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+            this.tempSpawnX = this.spawns[this.spawn][0];
+            this.tempSpawnY = this.spawns[this.spawn][1];
+        } while((this.tempSpawnX >= this.playerSpawnX - 100 && this.tempSpawnX <= this.playerSpawnX + 100) && (this.tempSpawnY >= this.playerSpawnY - 100 && this.tempSpawnY <= this.playerSpawnY + 100));
         this.deathGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'deathGem');
         this.deathGem.anchor.setTo(0.5);
         this.game.physics.arcade.enable(this.deathGem);
         this.spawns.splice(this.spawn, 1);
         
-        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+        do
+        {
+            this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+            this.tempSpawnX = this.spawns[this.spawn][0];
+            this.tempSpawnY = this.spawns[this.spawn][1];
+        } while((this.tempSpawnX >= this.playerSpawnX - 100 && this.tempSpawnX <= this.playerSpawnX + 100) && (this.tempSpawnY >= this.playerSpawnY - 100 && this.tempSpawnY <= this.playerSpawnY + 100));
         this.shrinkGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'shrinkGem');
         this.shrinkGem.anchor.setTo(0.5);
         this.game.physics.arcade.enable(this.shrinkGem);
         this.spawns.splice(this.spawn, 1);
         
-        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+        do
+        {
+            this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+            this.tempSpawnX = this.spawns[this.spawn][0];
+            this.tempSpawnY = this.spawns[this.spawn][1];
+        } while((this.tempSpawnX >= this.playerSpawnX - 100 && this.tempSpawnX <= this.playerSpawnX + 100) && (this.tempSpawnY >= this.playerSpawnY - 100 && this.tempSpawnY <= this.playerSpawnY + 100));
         this.growGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'growGem');
         this.growGem.anchor.setTo(0.5);
         this.game.physics.arcade.enable(this.growGem);
         this.spawns.splice(this.spawn, 1);
-        
-//        this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
-//        this.freezeGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'freezeGem');
-//        this.freezeGem.anchor.setTo(0.5);
-//        this.game.physics.arcade.enable(this.freezeGem);
-//        this.spawns.splice(this.spawn, 1);    
+
+        do
+        {
+            this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+            this.tempSpawnX = this.spawns[this.spawn][0];
+            this.tempSpawnY = this.spawns[this.spawn][1];
+        } while((this.tempSpawnX >= this.playerSpawnX - 100 && this.tempSpawnX <= this.playerSpawnX + 100) && (this.tempSpawnY >= this.playerSpawnY - 100 && this.tempSpawnY <= this.playerSpawnY + 100));
+        this.freezeGem = this.game.add.sprite(this.spawns[this.spawn][0], this.spawns[this.spawn][1], 'freezeGem');
+        this.freezeGem.anchor.setTo(0.5);
+        this.game.physics.arcade.enable(this.freezeGem);
+        this.spawns.splice(this.spawn, 1);    
         
         this.player = this.add.sprite(this.playerSpawnX, this.playerSpawnY, 'player');
         this.player.anchor.setTo(0.5);
@@ -157,6 +209,8 @@ BasicGame.Game.prototype = {
         
         this.timeText = this.game.add.text(400, 0, "Time: " + Math.floor(this.timer.seconds), this.style);
         this.timeText.anchor.setTo(0.5, 0);
+        this.music = this.game.add.audio('music', 1, true);
+        this.game.time.events.add(Phaser.Timer.SECOND, function() {this.music.play();}, this);
         
     },
 
@@ -165,7 +219,7 @@ BasicGame.Game.prototype = {
         this.glow.x = this.player.x;
         this.glow.y = this.player.y;
         
-//        this.game.physics.arcade.overlap(this.player, this.freezeGem, this.playerHitsFreezeGem, null, this);
+        this.game.physics.arcade.overlap(this.player, this.freezeGem, this.playerHitsFreezeGem, null, this);
         
         this.game.physics.arcade.overlap(this.player, this.growGem, function () {this.glow.scale.x *= 2; this.glow.scale.y *= 2; this.growGem.kill();}, null, this);
         
@@ -176,23 +230,20 @@ BasicGame.Game.prototype = {
     },
     
     quitGame: function (pointer) {
-
-        //  Here you should destroy anything you no longer need.
-        //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
-
-        //  Then let's go back to the main menu.
-//        this.state.start('MainMenu');
-        
+        this.music.stop();
+        this.music.destroy();
         this.glow.destroy();
         this.player.destroy();
         this.deathGem.destroy();
         this.goalGem.destroy();
         this.shrinkGem.destroy();
         this.growGem.destroy();
+        this.freezeGem.destroy();
         this.timeText.destroy();
         this.timer.destroy();
         this.livesText.destroy();
         this.goalText.destroy();
+        this.game.time.events.add(Phaser.Timer.SECOND*3, function() {this.state.start('MainMenu');}, this);
 
     },
     
@@ -202,7 +253,7 @@ BasicGame.Game.prototype = {
         if (this.goalCount === 3)
         {
             this.game.stage.backgroundColor = "#000000";
-            this.endGameText = this.game.add.text(400, 300, "You Found the Treasure!\nFinal Time: " + Math.floor(this.timer.seconds) + "\n" + "Refresh to Play Again!", this.style);
+            this.endGameText = this.game.add.text(400, 300, "You Found the Treasure!\nFinal Time: " + Math.floor(this.timer.seconds) + "\n" + "Returning to Main Menu", this.style);
             this.endGameText.anchor.setTo(0.5);
             this.quitGame();
 
@@ -211,7 +262,12 @@ BasicGame.Game.prototype = {
         {
             this.goalText.setText("Jewels: " + this.goalCount);
             this.goalGem.kill();
-            this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+            do
+            {
+                this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+                this.tempSpawnX = this.spawns[this.spawn][0];
+                this.tempSpawnY = this.spawns[this.spawn][1];
+            } while((this.tempSpawnX >= this.player.x - 100 && this.tempSpawnX <= this.player.x + 100) && (this.tempSpawnY >= this.player.y - 100 && this.tempSpawnY <= this.player.y + 100));
             this.goalGem.reset(this.spawns[this.spawn][0], this.spawns[this.spawn][1]);
             this.goalGem.anchor.setTo(0.5);
             this.game.physics.arcade.enable(this.goalGem);
@@ -225,7 +281,7 @@ BasicGame.Game.prototype = {
         if (this.livesCount === 0)
         {
             this.game.stage.backgroundColor = "#000000";
-            this.endGameText = this.game.add.text(400, 300, "Game Over!\nRefresh to Play Again!", this.style);
+            this.endGameText = this.game.add.text(400, 300, "Game Over!\nReturning to Main Menu", this.style);
             this.endGameText.anchor.setTo(0.5);
             this.quitGame();
         }
@@ -233,45 +289,54 @@ BasicGame.Game.prototype = {
         {
             this.livesText.setText("Lives: " + this.livesCount);
             this.deathGem.kill();
-            this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+            do
+            {
+                this.spawn = this.game.rnd.integerInRange(0, this.spawns.length - 1);
+                this.tempSpawnX = this.spawns[this.spawn][0];
+                this.tempSpawnY = this.spawns[this.spawn][1];
+            } while((this.tempSpawnX >= this.player.x - 100 && this.tempSpawnX <= this.player.x + 100) && (this.tempSpawnY >= this.player.y - 100 && this.tempSpawnY <= this.player.y + 100));
             this.deathGem.reset(this.spawns[this.spawn][0], this.spawns[this.spawn][1]);
             this.deathGem.anchor.setTo(0.5);
             this.game.physics.arcade.enable(this.deathGem);
             this.spawns.splice(this.spawn, 1);  
         }
-    }
+    },
     
-//    playerHitsFreezeGem: function (player, freezeGem) {
-//        this.freezeGem.kill();
-//        this.freezePlayer();
-//        this.game.time.events.add(Phaser.Timer.SECOND*5, this.unfreezePlayer, this);
-//        
-//    },
-//    
-//    freezePlayer: function () {
-//        this.player.body.velocity.x = 0;
-//        this.player.body.velocity.y = 0;
-//        this.upKey.onDown.removeAll(this);
-//        this.upKey.onUp.removeAll(this);
-//        this.downKey.onDown.removeAll(this);
-//        this.downKey.onUp.removeAll(this);
-//        this.leftKey.onDown.removeAll(this);
-//        this.leftKey.onUp.removeAll(this);
-//        this.rightKey.onDown.removeAll(this);
-//        this.rightKey.onUp.removeAll(this);
-//    },
-//    
-//    unfreezePlayer: function () {
-//        this.upKey.onDown.add(function() {this.player.animations.play('walk-up', this.playerFrameRate, true); if (this.player.body.velocity.y == 0) {this.player.body.velocity.y -= this.speed;}}, this);
-//        this.upKey.onUp.add(function() {this.player.animations.stop('walk-up'); if (this.player.body.velocity.y != 0) {this.player.body.velocity.y += this.speed;}}, this);
-//        
-//        this.downKey.onDown.add(function() {this.player.animations.play('walk-down', this.playerFrameRate, true); if (this.player.body.velocity.y == 0) {this.player.body.velocity.y += this.speed;}}, this);
-//        this.downKey.onUp.add(function() {this.player.animations.stop('walk-down'); if (this.player.body.velocity.y != 0) {this.player.body.velocity.y -= this.speed;}}, this);
-//        
-//        this.leftKey.onDown.add(function() {this.player.animations.play('walk-left', this.playerFrameRate, true); if (this.player.body.velocity.x == 0) {this.player.body.velocity.x -= this.speed;}}, this);
-//        this.leftKey.onUp.add(function() {this.player.animations.stop('walk-left'); if (this.player.body.velocity.x != 0) {this.player.body.velocity.x += this.speed;}}, this);
-//        
-//        this.rightKey.onDown.add(function() {this.player.animations.play('walk-right', this.playerFrameRate, true); if (this.player.body.velocity.x == 0) {this.player.body.velocity.x += this.speed;}}, this);
-//        this.rightKey.onUp.add(function() {this.player.animations.stop('walk-right'); if (this.player.body.velocity.x != 0) {this.player.body.velocity.x -= this.speed;}}, this);
-//    }
+    playerHitsFreezeGem: function (player, freezeGem) {
+        this.freezeGem.kill();
+        this.freezePlayer();
+        this.game.time.events.add(Phaser.Timer.SECOND*5, this.unfreezePlayer, this);
+        
+    },
+    
+    freezePlayer: function () {
+        this.player.body.velocity.x = 0;
+        this.player.body.velocity.y = 0;
+        this.player.animations.stop('walk-up');
+        this.player.animations.stop('walk-down');
+        this.player.animations.stop('walk-left');
+        this.player.animations.stop('walk-right');
+        this.upKey.onDown.removeAll(this);
+        this.upKey.onUp.removeAll(this);
+        this.downKey.onDown.removeAll(this);
+        this.downKey.onUp.removeAll(this);
+        this.leftKey.onDown.removeAll(this);
+        this.leftKey.onUp.removeAll(this);
+        this.rightKey.onDown.removeAll(this);
+        this.rightKey.onUp.removeAll(this);
+    },
+    
+    unfreezePlayer: function () {
+        this.upKey.onDown.add(function() {this.player.animations.play('walk-up', this.playerFrameRate, true); if (this.player.body.velocity.y == 0) {this.player.body.velocity.y -= this.speed;}}, this);
+        this.upKey.onUp.add(function() {this.player.animations.stop('walk-up'); if (this.player.body.velocity.y != 0) {this.player.body.velocity.y += this.speed;}}, this);
+        
+        this.downKey.onDown.add(function() {this.player.animations.play('walk-down', this.playerFrameRate, true); if (this.player.body.velocity.y == 0) {this.player.body.velocity.y += this.speed;}}, this);
+        this.downKey.onUp.add(function() {this.player.animations.stop('walk-down'); if (this.player.body.velocity.y != 0) {this.player.body.velocity.y -= this.speed;}}, this);
+        
+        this.leftKey.onDown.add(function() {this.player.animations.play('walk-left', this.playerFrameRate, true); if (this.player.body.velocity.x == 0) {this.player.body.velocity.x -= this.speed;}}, this);
+        this.leftKey.onUp.add(function() {this.player.animations.stop('walk-left'); if (this.player.body.velocity.x != 0) {this.player.body.velocity.x += this.speed;}}, this);
+        
+        this.rightKey.onDown.add(function() {this.player.animations.play('walk-right', this.playerFrameRate, true); if (this.player.body.velocity.x == 0) {this.player.body.velocity.x += this.speed;}}, this);
+        this.rightKey.onUp.add(function() {this.player.animations.stop('walk-right'); if (this.player.body.velocity.x != 0) {this.player.body.velocity.x -= this.speed;}}, this);
+    }
 };
